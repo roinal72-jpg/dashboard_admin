@@ -1,45 +1,94 @@
-import { getAccessToken, refreshAccessToken } from "./auth"
+import {
+  getAccessToken,
+  refreshAccessToken,
+  clearAdminSession,
+} from "./auth"
 
 const API_URL = "http://localhost:8081"
 
-export async function apiFetch(endpoint, options = {}) {
-  let accessToken = await getAccessToken()
+export async function apiFetch(
+  endpoint,
+  options = {}
+) {
+  let accessToken =
+    await getAccessToken()
 
   if (!accessToken) {
-    throw new Error("Sesi admin tidak tersedia")
+    clearAdminSession()
+    window.location.replace("/login")
+    throw new Error(
+      "Sesi admin sudah berakhir"
+    )
   }
 
   const makeRequest = (token) => {
-    const headers = new Headers(options.headers || {})
+    const headers = new Headers(
+      options.headers || {}
+    )
 
-    headers.set("Authorization", `Bearer ${token}`)
+    headers.set(
+      "Authorization",
+      `Bearer ${token}`
+    )
 
-    if (options.body && !headers.has("Content-Type")) {
-      headers.set("Content-Type", "application/json")
+    if (
+      options.body &&
+      !headers.has("Content-Type")
+    ) {
+      headers.set(
+        "Content-Type",
+        "application/json"
+      )
     }
 
-    return fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      headers,
-    })
+    return fetch(
+      `${API_URL}${endpoint}`,
+      {
+        ...options,
+        headers,
+        credentials: "include",
+      }
+    )
   }
 
-  let response = await makeRequest(accessToken)
+  let response =
+    await makeRequest(accessToken)
 
   if (response.status === 401) {
-    const refreshed = await refreshAccessToken()
+    const refreshed =
+      await refreshAccessToken()
 
     if (!refreshed) {
-      throw new Error("Sesi admin sudah berakhir")
+      clearAdminSession()
+
+      window.location.replace(
+        "/login"
+      )
+
+      throw new Error(
+        "Sesi admin sudah berakhir"
+      )
     }
 
-    accessToken = localStorage.getItem("admin_access_token")
+    accessToken =
+      localStorage.getItem(
+        "admin_access_token"
+      )
 
     if (!accessToken) {
-      throw new Error("Access token tidak tersedia")
+      clearAdminSession()
+
+      window.location.replace(
+        "/login"
+      )
+
+      throw new Error(
+        "Access token tidak tersedia"
+      )
     }
 
-    response = await makeRequest(accessToken)
+    response =
+      await makeRequest(accessToken)
   }
 
   return response

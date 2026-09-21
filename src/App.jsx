@@ -5,6 +5,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom"
+
 import { useEffect, useState } from "react"
 
 import Sidebar from "./components/Sidebar"
@@ -19,13 +20,21 @@ import Logs from "./pages/Logs"
 import Settings from "./pages/Settings"
 import Login from "./pages/Login/Login"
 
-import { refreshAccessToken } from "./lib/auth"
+import {
+  getAccessToken,
+} from "./lib/auth"
 
-function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("admin_access_token")
-
-  if (!token) {
-    return <Navigate to="/login" replace />
+function ProtectedRoute({
+  authenticated,
+  children,
+}) {
+  if (!authenticated) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    )
   }
 
   return children
@@ -41,13 +50,62 @@ function AdminLayout() {
 
         <div className="page-content">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/agents" element={<Agents />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/logs" element={<Logs />} />
-            <Route path="/settings" element={<Settings />} />
+
+            <Route
+              path="/dashboard"
+              element={<Dashboard />}
+            />
+
+            <Route
+              path="/users"
+              element={<Users />}
+            />
+
+            <Route
+              path="/agents"
+              element={<Agents />}
+            />
+
+            <Route
+              path="/tasks"
+              element={<Tasks />}
+            />
+
+            <Route
+              path="/analytics"
+              element={<Analytics />}
+            />
+
+            <Route
+              path="/logs"
+              element={<Logs />}
+            />
+
+            <Route
+              path="/settings"
+              element={<Settings />}
+            />
+
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              }
+            />
+
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              }
+            />
+
           </Routes>
         </div>
       </main>
@@ -58,36 +116,77 @@ function AdminLayout() {
 function AppContent() {
   const location = useLocation()
 
-  const [checkingSession, setCheckingSession] = useState(true)
-  const [authenticated, setAuthenticated] = useState(false)
+  const [
+    checkingSession,
+    setCheckingSession,
+  ] = useState(true)
+
+  const [
+    authenticated,
+    setAuthenticated,
+  ] = useState(false)
 
   useEffect(() => {
-    const checkSession = async () => {
-      const accessToken = localStorage.getItem("admin_access_token")
-      const refreshToken = localStorage.getItem("admin_refresh_token")
+    let cancelled = false
 
-      if (accessToken) {
-        setAuthenticated(true)
-        setCheckingSession(false)
+    const checkSession = async () => {
+      setCheckingSession(true)
+
+      const accessToken =
+        await getAccessToken()
+
+      if (cancelled) {
         return
       }
 
-      if (refreshToken) {
-        const refreshed = await refreshAccessToken()
-
-        if (refreshed) {
-          setAuthenticated(true)
-          setCheckingSession(false)
-          return
-        }
+      if (!accessToken) {
+        setAuthenticated(false)
+      } else {
+        setAuthenticated(true)
       }
 
-      setAuthenticated(false)
       setCheckingSession(false)
     }
 
     checkSession()
-  }, [])
+
+    return () => {
+      cancelled = true
+    }
+  }, [location.pathname])
+
+  /*
+   * Cek session secara berkala.
+   * Jadi kalau token expired ketika
+   * user sedang diam di halaman,
+   * session tetap akan diperiksa.
+   */
+  useEffect(() => {
+    if (
+      location.pathname === "/login"
+    ) {
+      return
+    }
+
+    const interval = window.setInterval(
+      async () => {
+        const accessToken =
+          await getAccessToken()
+
+        if (!accessToken) {
+          setAuthenticated(false)
+          window.location.replace(
+            "/login"
+          )
+        }
+      },
+      15000
+    )
+
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [location.pathname])
 
   if (location.pathname === "/login") {
     return <Login />
@@ -103,12 +202,10 @@ function AppContent() {
     )
   }
 
-  if (!authenticated) {
-    return <Navigate to="/login" replace />
-  }
-
   return (
-    <ProtectedRoute>
+    <ProtectedRoute
+      authenticated={authenticated}
+    >
       <AdminLayout />
     </ProtectedRoute>
   )

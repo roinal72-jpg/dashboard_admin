@@ -1,35 +1,74 @@
-export async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("admin_refresh_token")
+const API_URL = "http://localhost:8081"
 
-  if (!refreshToken) {
+const clearAdminSession = () => {
+  localStorage.removeItem("admin_access_token")
+  localStorage.removeItem("admin_refresh_token")
+  localStorage.removeItem("admin_user")
+}
+
+const decodeJwtPayload = (token) => {
+  try {
+    const parts = token.split(".")
+
+    if (parts.length !== 3) {
+      return null
+    }
+
+    const base64 = parts[1]
+      .replace(/-/g, "+")
+      .replace(/_/g, "/")
+
+    const padded = base64.padEnd(
+      base64.length + ((4 - (base64.length % 4)) % 4),
+      "="
+    )
+
+    return JSON.parse(atob(padded))
+  } catch {
+    return null
+  }
+}
+
+const isTokenExpired = (token) => {
+  if (!token) {
+    return true
+  }
+
+  const payload = decodeJwtPayload(token)
+
+  if (!payload?.exp) {
     return false
   }
 
+  const now = Math.floor(
+    Date.now() / 1000
+  )
+
+  // Anggap expired 10 detik lebih awal
+  // supaya tidak memakai token yang
+  // hampir kedaluwarsa.
+  return payload.exp <= now + 10
+}
+
+export async function refreshAccessToken() {
   try {
     const response = await fetch(
-      "http://localhost:8081/api/admin/refresh",
+      `${API_URL}/api/auth/refresh`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refresh_token: refreshToken,
-        }),
+        credentials: "include",
       }
     )
 
     if (!response.ok) {
-      localStorage.removeItem("admin_access_token")
-      localStorage.removeItem("admin_refresh_token")
-      localStorage.removeItem("admin_user")
-
+      clearAdminSession()
       return false
     }
 
     const data = await response.json()
 
-    if (!data.access_token) {
+    if (!data?.access_token) {
+      clearAdminSession()
       return false
     }
 
@@ -40,15 +79,25 @@ export async function refreshAccessToken() {
 
     return true
   } catch (error) {
-    console.error("Gagal refresh access token:", error)
+    console.error(
+      "Gagal refresh access token:",
+      error
+    )
+
+    clearAdminSession()
     return false
   }
 }
 
 export async function getAccessToken() {
-  const accessToken = localStorage.getItem("admin_access_token")
+  const accessToken = localStorage.getItem(
+    "admin_access_token"
+  )
 
-  if (accessToken) {
+  if (
+    accessToken &&
+    !isTokenExpired(accessToken)
+  ) {
     return accessToken
   }
 
@@ -58,5 +107,9 @@ export async function getAccessToken() {
     return null
   }
 
-  return localStorage.getItem("admin_access_token")
+  return localStorage.getItem(
+    "admin_access_token"
+  )
 }
+
+export { clearAdminSession, isTokenExpired }

@@ -23,6 +23,7 @@ function Login() {
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: "include",
           body: JSON.stringify({
             email,
             password,
@@ -48,14 +49,15 @@ function Login() {
         )
       }
 
+      if (!data.access_token) {
+        throw new Error(
+          "Access token tidak diterima dari server"
+        )
+      }
+
       localStorage.setItem(
         "admin_access_token",
         data.access_token
-      )
-
-      localStorage.setItem(
-        "admin_refresh_token",
-        data.refresh_token
       )
 
       localStorage.setItem(
@@ -63,10 +65,13 @@ function Login() {
         JSON.stringify(data.user)
       )
 
-      navigate("/")
+      navigate("/dashboard", {
+        replace: true,
+      })
     } catch (error) {
       setError(
-        error.message || "Terjadi kesalahan saat login"
+        error.message ||
+          "Terjadi kesalahan saat login"
       )
     } finally {
       setLoading(false)
@@ -74,10 +79,13 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <div className="w-full max-w-md">
+
         <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl">
+
           <div className="mb-8 text-center">
+
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-slate-900 text-xl font-bold text-white">
               AI
             </div>
@@ -89,10 +97,16 @@ function Login() {
             <p className="mt-2 text-sm text-slate-500">
               Sign in to manage your dashboard
             </p>
+
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form
+            onSubmit={handleLogin}
+            className="space-y-5"
+          >
+
             <div>
+
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Email
               </label>
@@ -100,14 +114,31 @@ function Login() {
               <input
                 type="email"
                 value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                onChange={(event) =>
+                  setEmail(event.target.value)
+                }
                 placeholder="admin@example.com"
                 required
-                className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-slate-300
+                  px-4
+                  py-3
+                  text-sm
+                  outline-none
+                  transition
+                  focus:border-slate-900
+                  focus:ring-2
+                  focus:ring-slate-200
+                "
               />
+
             </div>
 
             <div>
+
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Password
               </label>
@@ -115,11 +146,27 @@ function Login() {
               <input
                 type="password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) =>
+                  setPassword(event.target.value)
+                }
                 placeholder="Enter your password"
                 required
-                className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                className="
+                  w-full
+                  rounded-lg
+                  border
+                  border-slate-300
+                  px-4
+                  py-3
+                  text-sm
+                  outline-none
+                  transition
+                  focus:border-slate-900
+                  focus:ring-2
+                  focus:ring-slate-200
+                "
               />
+
             </div>
 
             {error && (
@@ -131,15 +178,32 @@ function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="
+                w-full
+                rounded-lg
+                bg-slate-900
+                px-4
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                transition
+                hover:bg-slate-800
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading
+                ? "Signing in..."
+                : "Sign In"}
             </button>
+
           </form>
 
           <div className="mt-6 text-center text-xs text-slate-400">
             Admin Dashboard
           </div>
+
         </div>
       </div>
     </div>
