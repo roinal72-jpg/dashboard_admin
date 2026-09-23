@@ -4,6 +4,7 @@ import { apiFetch } from "../lib/api"
 
 const DEFAULT_SETTINGS = {
   autoRefresh: true,
+  maintenanceMode: false,
 }
 
 const loadSavedSettings = () => {
@@ -21,6 +22,7 @@ const loadSavedSettings = () => {
     return {
       autoRefresh:
         parsed.autoRefresh !== false,
+      maintenanceMode: false,
     }
   } catch {
     return DEFAULT_SETTINGS
@@ -33,6 +35,12 @@ function Settings() {
   )
 
   const [saved, setSaved] = useState(false)
+  const [maintenanceLoading, setMaintenanceLoading] =
+    useState(true)
+  const [maintenanceSaving, setMaintenanceSaving] =
+    useState(false)
+  const [maintenanceError, setMaintenanceError] =
+    useState("")
 
   const [systemInfo, setSystemInfo] = useState({
     version: "v1.0.0",
@@ -67,7 +75,9 @@ function Settings() {
   const handleSave = () => {
     localStorage.setItem(
       "admin_dashboard_settings",
-      JSON.stringify(settings)
+      JSON.stringify({
+        autoRefresh: settings.autoRefresh,
+      })
     )
 
     setSaved(true)
@@ -75,6 +85,113 @@ function Settings() {
     window.setTimeout(() => {
       setSaved(false)
     }, 2500)
+  }
+
+  // ============================================================
+  // LOAD MAINTENANCE STATUS
+  // ============================================================
+
+  const loadMaintenanceStatus = async () => {
+    setMaintenanceLoading(true)
+    setMaintenanceError("")
+
+    try {
+      const response = await fetch(
+        "http://localhost:8081/api/system/maintenance"
+      )
+
+      const data = await response.json().catch(() => ({}))
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(
+          data?.message ||
+            "Gagal mengambil status maintenance."
+        )
+      }
+
+      setSettings((current) => ({
+        ...current,
+        maintenanceMode:
+          data.maintenance === true,
+      }))
+    } catch (error) {
+      console.error(
+        "Gagal mengambil maintenance status:",
+        error
+      )
+
+      setMaintenanceError(
+        error.message ||
+          "Gagal mengambil status maintenance."
+      )
+    } finally {
+      setMaintenanceLoading(false)
+    }
+  }
+
+  // ============================================================
+  // UPDATE MAINTENANCE MODE
+  // ============================================================
+
+  const updateMaintenanceMode = async () => {
+    if (
+      maintenanceLoading ||
+      maintenanceSaving
+    ) {
+      return
+    }
+
+    const nextValue =
+      !settings.maintenanceMode
+
+    setMaintenanceSaving(true)
+    setMaintenanceError("")
+
+    try {
+      const response = await apiFetch(
+        "/api/admin/settings/maintenance",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            maintenance: nextValue,
+          }),
+        }
+      )
+
+      const data = await response
+        .json()
+        .catch(() => ({}))
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(
+          data?.message ||
+            "Gagal memperbarui maintenance mode."
+        )
+      }
+
+      setSettings((current) => ({
+        ...current,
+        maintenanceMode:
+          data.maintenance === true,
+      }))
+
+      setSaved(false)
+    } catch (error) {
+      console.error(
+        "Gagal memperbarui maintenance mode:",
+        error
+      )
+
+      setMaintenanceError(
+        error.message ||
+          "Gagal memperbarui maintenance mode."
+      )
+    } finally {
+      setMaintenanceSaving(false)
+    }
   }
 
   // ============================================================
@@ -166,6 +283,7 @@ function Settings() {
 
   useEffect(() => {
     loadSystemInfo()
+    loadMaintenanceStatus()
   }, [])
 
   // ============================================================
@@ -227,7 +345,9 @@ function Settings() {
 
             <div className="divide-y divide-slate-100">
 
-              {/* Auto Refresh */}
+              {/* ================================================== */}
+              {/* AUTO REFRESH */}
+              {/* ================================================== */}
 
               <div className="flex items-center justify-between gap-6 p-5">
 
@@ -260,6 +380,68 @@ function Settings() {
                   <span
                     className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
                       settings.autoRefresh
+                        ? "left-6"
+                        : "left-1"
+                    }`}
+                  />
+                </button>
+
+              </div>
+
+              {/* ================================================== */}
+              {/* MAINTENANCE MODE */}
+              {/* ================================================== */}
+
+              <div className="flex items-center justify-between gap-6 p-5">
+
+                <div>
+
+                  <p className="font-medium text-slate-800">
+                    Maintenance Mode
+                  </p>
+
+                  <p className="mt-1 text-sm text-slate-500">
+                    Disable access to the normal website while maintenance is active
+                  </p>
+
+                  {settings.maintenanceMode && (
+                    <p className="mt-2 text-xs font-medium text-amber-600">
+                      Website sedang dalam maintenance.
+                    </p>
+                  )}
+
+                  {maintenanceError && (
+                    <p className="mt-2 text-xs font-medium text-red-600">
+                      {maintenanceError}
+                    </p>
+                  )}
+
+                </div>
+
+                <button
+                  type="button"
+                  onClick={updateMaintenanceMode}
+                  disabled={
+                    maintenanceLoading ||
+                    maintenanceSaving
+                  }
+                  aria-pressed={
+                    settings.maintenanceMode
+                  }
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition ${
+                    settings.maintenanceMode
+                      ? "bg-amber-500"
+                      : "bg-slate-300"
+                  } ${
+                    maintenanceLoading ||
+                    maintenanceSaving
+                      ? "cursor-not-allowed opacity-50"
+                      : ""
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
+                      settings.maintenanceMode
                         ? "left-6"
                         : "left-1"
                     }`}
@@ -328,7 +510,9 @@ function Settings() {
 
             <div className="space-y-4 p-5">
 
-              {/* Version */}
+              {/* ================================================== */}
+              {/* VERSION */}
+              {/* ================================================== */}
 
               <div className="rounded-lg bg-slate-50 p-4">
 
@@ -342,7 +526,9 @@ function Settings() {
 
               </div>
 
-              {/* Environment */}
+              {/* ================================================== */}
+              {/* ENVIRONMENT */}
+              {/* ================================================== */}
 
               <div className="rounded-lg bg-slate-50 p-4">
 
@@ -356,7 +542,9 @@ function Settings() {
 
               </div>
 
-              {/* API Status */}
+              {/* ================================================== */}
+              {/* API STATUS */}
+              {/* ================================================== */}
 
               <div className="rounded-lg bg-slate-50 p-4">
 
@@ -398,7 +586,9 @@ function Settings() {
 
               </div>
 
-              {/* Database */}
+              {/* ================================================== */}
+              {/* DATABASE */}
+              {/* ================================================== */}
 
               <div className="rounded-lg bg-slate-50 p-4">
 
@@ -440,7 +630,9 @@ function Settings() {
 
               </div>
 
-              {/* Active Agents */}
+              {/* ================================================== */}
+              {/* ACTIVE AGENTS */}
+              {/* ================================================== */}
 
               <div className="rounded-lg bg-slate-50 p-4">
 
@@ -456,15 +648,65 @@ function Settings() {
 
               </div>
 
+              {/* ================================================== */}
+              {/* MAINTENANCE STATUS */}
+              {/* ================================================== */}
+
+              <div className="rounded-lg bg-slate-50 p-4">
+
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                  Maintenance
+                </p>
+
+                <div className="mt-1 flex items-center gap-2">
+
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      maintenanceLoading
+                        ? "bg-yellow-500"
+                        : settings.maintenanceMode
+                          ? "bg-amber-500"
+                          : "bg-green-500"
+                    }`}
+                  />
+
+                  <p
+                    className={`font-semibold ${
+                      maintenanceLoading
+                        ? "text-yellow-700"
+                        : settings.maintenanceMode
+                          ? "text-amber-700"
+                          : "text-green-700"
+                    }`}
+                  >
+                    {maintenanceLoading
+                      ? "Checking"
+                      : settings.maintenanceMode
+                        ? "Active"
+                        : "Off"}
+                  </p>
+
+                </div>
+
+              </div>
+
             </div>
           </div>
 
-          {/* Refresh */}
+          {/* ================================================== */}
+          {/* REFRESH */}
+          {/* ================================================== */}
 
           <button
             type="button"
-            onClick={loadSystemInfo}
-            disabled={loadingInfo}
+            onClick={() => {
+              loadSystemInfo()
+              loadMaintenanceStatus()
+            }}
+            disabled={
+              loadingInfo ||
+              maintenanceLoading
+            }
             className="
               mt-4
               w-full
@@ -483,7 +725,7 @@ function Settings() {
               disabled:opacity-50
             "
           >
-            {loadingInfo
+            {loadingInfo || maintenanceLoading
               ? "Refreshing..."
               : "Refresh System Information"}
           </button>
