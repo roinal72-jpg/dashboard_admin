@@ -40,30 +40,71 @@ const menuItems = [
 
 function Sidebar() {
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-60 flex-col border-r border-slate-800 bg-slate-950">
+    <aside
+      className="
+        fixed left-0 top-0 z-40
+        flex h-screen w-60 flex-col
+        border-r
+        border-slate-200
+        bg-white
+        transition-colors
+        duration-200
+        dark:border-slate-800
+        dark:bg-slate-950
+      "
+    >
 
       {/* LOGO */}
 
-      <div className="border-b border-slate-800 px-5 py-5">
-
+      <div
+        className="
+          border-b
+          border-slate-200
+          px-5 py-5
+          transition-colors
+          dark:border-slate-800
+        "
+      >
         <div className="flex items-center gap-3">
 
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+          <div
+            className="
+              flex h-9 w-9
+              items-center justify-center
+              rounded-lg
+              bg-blue-600
+              text-sm font-bold
+              text-white
+            "
+          >
             AI
           </div>
 
           <div>
-            <h1 className="text-sm font-semibold text-white">
+
+            <h1
+              className="
+                text-sm font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Agentic AI
             </h1>
 
-            <p className="mt-0.5 text-[10px] text-slate-500">
+            <p
+              className="
+                mt-0.5 text-[10px]
+                text-slate-500
+                dark:text-slate-500
+              "
+            >
               Admin Dashboard
             </p>
+
           </div>
 
         </div>
-
       </div>
 
 
@@ -79,15 +120,43 @@ function Sidebar() {
             end={item.path === "/"}
             className={({ isActive }) =>
               [
-                "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium transition",
+                `
+                  flex h-10
+                  items-center gap-3
+                  rounded-lg
+                  px-3
+                  text-sm font-medium
+                  transition-colors
+                `,
+
                 isActive
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "text-slate-400 hover:bg-slate-900 hover:text-white",
+                  ? `
+                    bg-blue-600
+                    text-white
+                    shadow-sm
+                    hover:bg-blue-600
+                  `
+                  : `
+                    text-slate-600
+                    hover:bg-slate-100
+                    hover:text-slate-900
+
+                    dark:text-slate-400
+                    dark:hover:bg-slate-900
+                    dark:hover:text-white
+                  `,
               ].join(" ")
             }
           >
 
-            <span className="flex w-5 items-center justify-center text-sm">
+            <span
+              className="
+                flex w-5
+                items-center
+                justify-center
+                text-sm
+              "
+            >
               {item.icon}
             </span>
 
@@ -104,21 +173,56 @@ function Sidebar() {
 
       {/* BOTTOM PROFILE */}
 
-      <div className="border-t border-slate-800 p-4">
+      <div
+        className="
+          border-t
+          border-slate-200
+          p-4
+          transition-colors
+          dark:border-slate-800
+        "
+      >
 
         <div className="flex items-center gap-3">
 
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
+          {/* AVATAR */}
+
+          <div
+            className="
+              flex h-9 w-9
+              items-center justify-center
+              rounded-full
+              bg-blue-600
+              text-xs font-semibold
+              text-white
+            "
+          >
             A
           </div>
 
+          {/* PROFILE INFO */}
+
           <div className="min-w-0 flex-1">
 
-            <p className="truncate text-xs font-semibold text-white">
+            <p
+              className="
+                truncate
+                text-xs font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Admin
             </p>
 
-            <p className="truncate text-[10px] text-slate-500">
+            <p
+              className="
+                truncate
+                text-[10px]
+                text-slate-500
+                dark:text-slate-500
+              "
+            >
               admin@example.com
             </p>
 

@@ -1,12 +1,14 @@
 const API_URL = "http://localhost:8081"
 
-const clearAdminSession = () => {
+let refreshPromise = null
+
+export function clearAdminSession() {
   localStorage.removeItem("admin_access_token")
   localStorage.removeItem("admin_refresh_token")
   localStorage.removeItem("admin_user")
 }
 
-const decodeJwtPayload = (token) => {
+function decodeJwtPayload(token) {
   try {
     const parts = token.split(".")
 
@@ -29,7 +31,7 @@ const decodeJwtPayload = (token) => {
   }
 }
 
-const isTokenExpired = (token) => {
+export function isTokenExpired(token) {
   if (!token) {
     return true
   }
@@ -37,56 +39,60 @@ const isTokenExpired = (token) => {
   const payload = decodeJwtPayload(token)
 
   if (!payload?.exp) {
-    return false
+    return true
   }
 
-  const now = Math.floor(
-    Date.now() / 1000
-  )
+  const now = Math.floor(Date.now() / 1000)
 
-  // Anggap expired 10 detik lebih awal
-  // supaya tidak memakai token yang
-  // hampir kedaluwarsa.
-  return payload.exp <= now + 10
+  return payload.exp <= now
 }
 
 export async function refreshAccessToken() {
-  try {
-    const response = await fetch(
-      `${API_URL}/api/auth/refresh`,
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    )
-
-    if (!response.ok) {
-      clearAdminSession()
-      return false
-    }
-
-    const data = await response.json()
-
-    if (!data?.access_token) {
-      clearAdminSession()
-      return false
-    }
-
-    localStorage.setItem(
-      "admin_access_token",
-      data.access_token
-    )
-
-    return true
-  } catch (error) {
-    console.error(
-      "Gagal refresh access token:",
-      error
-    )
-
-    clearAdminSession()
-    return false
+  // Jangan jalankan refresh kedua kalau refresh pertama
+  // masih sedang berjalan.
+  if (refreshPromise) {
+    return refreshPromise
   }
+
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(
+        `${API_URL}/api/auth/refresh`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      )
+
+      if (!response.ok) {
+        return null
+      }
+
+      const data = await response.json()
+
+      if (!data?.access_token) {
+        return null
+      }
+
+      localStorage.setItem(
+        "admin_access_token",
+        data.access_token
+      )
+
+      return data.access_token
+    } catch (error) {
+      console.error(
+        "Refresh access token gagal:",
+        error
+      )
+
+      return null
+    } finally {
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
 }
 
 export async function getAccessToken() {
@@ -94,22 +100,9 @@ export async function getAccessToken() {
     "admin_access_token"
   )
 
-  if (
-    accessToken &&
-    !isTokenExpired(accessToken)
-  ) {
+  if (accessToken && !isTokenExpired(accessToken)) {
     return accessToken
   }
 
-  const refreshed = await refreshAccessToken()
-
-  if (!refreshed) {
-    return null
-  }
-
-  return localStorage.getItem(
-    "admin_access_token"
-  )
+  return await refreshAccessToken()
 }
-
-export { clearAdminSession, isTokenExpired }

@@ -52,7 +52,10 @@ function Users() {
   const [roleFilter, setRoleFilter] = useState("All")
 
   const [openMenu, setOpenMenu] = useState(null)
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
+  const [menuPosition, setMenuPosition] = useState({
+    top: 0,
+    left: 0,
+  })
 
   const [selectedUser, setSelectedUser] = useState(null)
   const [editingUser, setEditingUser] = useState(null)
@@ -113,8 +116,10 @@ function Users() {
       setUsers(usersData.map(normalizeUser))
     } catch (error) {
       console.error("Gagal mengambil users:", error)
+
       setPageError(
-        error.message || "Gagal mengambil data users dari server."
+        error.message ||
+          "Gagal mengambil data users dari server."
       )
     } finally {
       setLoading(false)
@@ -138,7 +143,8 @@ function Users() {
         user.email.toLowerCase().includes(searchValue)
 
       const matchesRole =
-        roleFilter === "All" || user.role === roleFilter
+        roleFilter === "All" ||
+        user.role === roleFilter
 
       return matchesSearch && matchesRole
     })
@@ -150,34 +156,55 @@ function Users() {
 
   const getStatusClass = (status) => {
     if (status === "Active") {
-      return "bg-green-100 text-green-700"
+      return `
+        bg-green-100 text-green-700
+        dark:bg-green-950/50 dark:text-green-400
+      `
     }
 
     if (status === "Suspended") {
-      return "bg-red-100 text-red-700"
+      return `
+        bg-red-100 text-red-700
+        dark:bg-red-950/50 dark:text-red-400
+      `
     }
 
-    return "bg-slate-100 text-slate-600"
+    return `
+      bg-slate-100 text-slate-600
+      dark:bg-slate-800 dark:text-slate-400
+    `
   }
 
   const getRoleClass = (role) => {
     if (role === "Admin") {
-      return "bg-purple-100 text-purple-700"
+      return `
+        bg-purple-100 text-purple-700
+        dark:bg-purple-950/50 dark:text-purple-400
+      `
     }
 
-    return "bg-slate-100 text-slate-600"
+    return `
+      bg-slate-100 text-slate-600
+      dark:bg-slate-800 dark:text-slate-400
+    `
   }
 
   const getAvatarClass = (role) => {
     if (role === "Admin") {
-      return "bg-purple-600 text-white"
+      return `
+        bg-purple-600 text-white
+        dark:bg-purple-500
+      `
     }
 
-    return "bg-slate-500 text-white"
+    return `
+      bg-slate-500 text-white
+      dark:bg-slate-700
+    `
   }
 
   // ============================================================
-  // ADD USER FORM
+  // ADD USER
   // ============================================================
 
   const handleNewUserChange = (event) => {
@@ -198,23 +225,33 @@ function Users() {
     const email = newUser.email.trim()
 
     if (!name || !email || !newUser.password) {
-      setFormError("Please fill in all required fields.")
+      setFormError(
+        "Please fill in all required fields."
+      )
       return
     }
 
     if (newUser.password.length < 6) {
-      setFormError("Password must be at least 6 characters.")
+      setFormError(
+        "Password must be at least 6 characters."
+      )
       return
     }
 
-    if (newUser.password !== newUser.confirmPassword) {
-      setFormError("Passwords do not match.")
+    if (
+      newUser.password !==
+      newUser.confirmPassword
+    ) {
+      setFormError(
+        "Passwords do not match."
+      )
       return
     }
 
     const emailExists = users.some(
       (user) =>
-        user.email.toLowerCase() === email.toLowerCase()
+        user.email.toLowerCase() ===
+        email.toLowerCase()
     )
 
     if (emailExists) {
@@ -229,19 +266,27 @@ function Users() {
 
     try {
       const backendRole =
-        newUser.role === "Admin" ? "admin" : "user"
+        newUser.role === "Admin"
+          ? "admin"
+          : "user"
 
-      const response = await apiFetch("/api/admin/users", {
-        method: "POST",
-        body: JSON.stringify({
-          name,
-          email,
-          password: newUser.password,
-          role: backendRole,
-        }),
-      })
+      const response = await apiFetch(
+        "/api/admin/users",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            name,
+            email,
+            password: newUser.password,
+            role: backendRole,
+          }),
+        }
+      )
 
-      const data = await response.json().catch(() => ({}))
+      const data =
+        await response
+          .json()
+          .catch(() => ({}))
 
       if (!response.ok) {
         throw new Error(
@@ -252,17 +297,19 @@ function Users() {
       }
 
       setShowAddUser(false)
-
       setNewUser(initialNewUser)
-
       setFormError("")
 
       await loadUsers()
     } catch (error) {
-      console.error("Gagal membuat user:", error)
+      console.error(
+        "Gagal membuat user:",
+        error
+      )
 
       setFormError(
-        error.message || "Gagal membuat user."
+        error.message ||
+          "Gagal membuat user."
       )
     } finally {
       setSubmitting(false)
@@ -308,14 +355,17 @@ function Users() {
     const email = editForm.email.trim()
 
     if (!name || !email) {
-      setFormError("Name and email are required.")
+      setFormError(
+        "Name and email are required."
+      )
       return
     }
 
     const emailExists = users.some(
       (user) =>
         user.id !== editingUser.id &&
-        user.email.toLowerCase() === email.toLowerCase()
+        user.email.toLowerCase() ===
+          email.toLowerCase()
     )
 
     if (emailExists) {
@@ -330,7 +380,9 @@ function Users() {
 
     try {
       const backendRole =
-        editForm.role === "Admin" ? "admin" : "user"
+        editForm.role === "Admin"
+          ? "admin"
+          : "user"
 
       const response = await apiFetch(
         `/api/admin/users/${editingUser.id}`,
@@ -344,7 +396,10 @@ function Users() {
         }
       )
 
-      const data = await response.json().catch(() => ({}))
+      const data =
+        await response
+          .json()
+          .catch(() => ({}))
 
       if (!response.ok) {
         throw new Error(
@@ -355,17 +410,19 @@ function Users() {
       }
 
       setEditingUser(null)
-
       setEditForm(initialEditForm)
-
       setFormError("")
 
       await loadUsers()
     } catch (error) {
-      console.error("Gagal mengubah user:", error)
+      console.error(
+        "Gagal mengubah user:",
+        error
+      )
 
       setFormError(
-        error.message || "Gagal mengubah user."
+        error.message ||
+          "Gagal mengubah user."
       )
     } finally {
       setSubmitting(false)
@@ -378,7 +435,8 @@ function Users() {
 
   const handleDelete = async (id) => {
     const user = users.find(
-      (currentUser) => currentUser.id === id
+      (currentUser) =>
+        currentUser.id === id
     )
 
     if (!user) {
@@ -405,7 +463,10 @@ function Users() {
         }
       )
 
-      const data = await response.json().catch(() => ({}))
+      const data =
+        await response
+          .json()
+          .catch(() => ({}))
 
       if (!response.ok) {
         throw new Error(
@@ -425,10 +486,14 @@ function Users() {
 
       await loadUsers()
     } catch (error) {
-      console.error("Gagal menghapus user:", error)
+      console.error(
+        "Gagal menghapus user:",
+        error
+      )
 
       setPageError(
-        error.message || "Gagal menghapus user."
+        error.message ||
+          "Gagal menghapus user."
       )
     } finally {
       setDeletingId(null)
@@ -445,45 +510,175 @@ function Users() {
   }
 
   // ============================================================
+  // SHARED INPUT CLASS
+  // ============================================================
+
+  const inputClass = `
+    w-full
+    rounded-lg
+    border
+    border-slate-200
+    bg-white
+    px-3
+    py-2.5
+    text-sm
+    text-slate-900
+    outline-none
+    transition
+    placeholder:text-slate-400
+    focus:border-slate-400
+    focus:ring-2
+    focus:ring-slate-100
+
+    dark:border-slate-700
+    dark:bg-slate-900
+    dark:text-white
+    dark:placeholder:text-slate-500
+    dark:focus:border-slate-600
+    dark:focus:ring-slate-800
+  `
+
+  // ============================================================
   // RETURN
   // ============================================================
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      {/* Header */}
+    <div
+      className="
+        min-h-screen
+        bg-slate-50
+        p-6
+        text-slate-900
+        transition-colors
+        dark:bg-slate-950
+        dark:text-white
+      "
+    >
+      {/* HEADER */}
+
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1
+          className="
+            text-2xl
+            font-bold
+            text-slate-900
+            dark:text-white
+          "
+        >
           Users
         </h1>
 
-        <p className="mt-1 text-sm text-slate-500">
+        <p
+          className="
+            mt-1
+            text-sm
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
           Manage users and their access
         </p>
       </div>
 
-      {/* Page Error */}
+      {/* PAGE ERROR */}
+
       {pageError && (
-        <div className="mb-5 flex items-center justify-between gap-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-          <p className="text-sm font-medium text-red-600">
+        <div
+          className="
+            mb-5
+            flex
+            items-center
+            justify-between
+            gap-4
+            rounded-lg
+            border
+            border-red-200
+            bg-red-50
+            px-4
+            py-3
+
+            dark:border-red-900
+            dark:bg-red-950/40
+          "
+        >
+          <p
+            className="
+              text-sm
+              font-medium
+              text-red-600
+              dark:text-red-400
+            "
+          >
             {pageError}
           </p>
 
           <button
             onClick={loadUsers}
-            className="shrink-0 rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-700"
+            className="
+              shrink-0
+              rounded-lg
+              bg-red-600
+              px-3
+              py-2
+              text-sm
+              font-semibold
+              text-white
+              transition
+              hover:bg-red-700
+            "
           >
             Retry
           </button>
         </div>
       )}
 
-      {/* Main Card */}
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        {/* Toolbar */}
-        <div className="flex flex-col gap-4 border-b border-slate-200 p-5 lg:flex-row lg:items-center lg:justify-between">
-          {/* Search */}
+      {/* MAIN CARD */}
+
+      <div
+        className="
+          overflow-hidden
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          shadow-sm
+          transition-colors
+
+          dark:border-slate-800
+          dark:bg-slate-900
+        "
+      >
+        {/* TOOLBAR */}
+
+        <div
+          className="
+            flex
+            flex-col
+            gap-4
+            border-b
+            border-slate-200
+            p-5
+            lg:flex-row
+            lg:items-center
+            lg:justify-between
+
+            dark:border-slate-800
+          "
+        >
+          {/* SEARCH */}
+
           <div className="relative w-full lg:max-w-md">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            <span
+              className="
+                pointer-events-none
+                absolute
+                left-3
+                top-1/2
+                -translate-y-1/2
+                text-slate-400
+                dark:text-slate-500
+              "
+            >
               ⌕
             </span>
 
@@ -492,36 +687,30 @@ function Users() {
               placeholder="Search users..."
               value={search}
               onChange={(event) =>
-                setSearch(event.target.value)
+                setSearch(
+                  event.target.value
+                )
               }
-              className="
-                w-full
-                rounded-lg
-                border
-                border-slate-200
+              className={`
+                ${inputClass}
                 bg-slate-50
-                py-2.5
                 pl-9
-                pr-4
-                text-sm
-                text-slate-900
-                outline-none
-                transition
-                placeholder:text-slate-400
-                focus:border-slate-400
-                focus:bg-white
-                focus:ring-2
-                focus:ring-slate-100
-              "
+
+                dark:bg-slate-950
+                dark:focus:bg-slate-900
+              `}
             />
           </div>
 
-          {/* Filters + Add User */}
+          {/* FILTERS */}
+
           <div className="flex flex-col gap-3 sm:flex-row">
             <select
               value={roleFilter}
               onChange={(event) =>
-                setRoleFilter(event.target.value)
+                setRoleFilter(
+                  event.target.value
+                )
               }
               className="
                 rounded-lg
@@ -533,7 +722,13 @@ function Users() {
                 text-sm
                 text-slate-700
                 outline-none
+                transition
                 focus:border-slate-400
+
+                dark:border-slate-700
+                dark:bg-slate-900
+                dark:text-slate-300
+                dark:focus:border-slate-600
               "
             >
               <option value="All">
@@ -552,7 +747,9 @@ function Users() {
             <button
               onClick={() => {
                 setFormError("")
-                setNewUser(initialNewUser)
+                setNewUser(
+                  initialNewUser
+                )
                 setShowAddUser(true)
               }}
               className="
@@ -572,6 +769,10 @@ function Users() {
                 transition
                 hover:bg-slate-800
                 hover:shadow-md
+
+                dark:bg-white
+                dark:text-slate-900
+                dark:hover:bg-slate-200
               "
             >
               <span className="text-base leading-none">
@@ -583,21 +784,53 @@ function Users() {
           </div>
         </div>
 
-        {/* Result Info */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
-          <p className="text-sm text-slate-500">
+        {/* RESULT INFO */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            border-b
+            border-slate-100
+            px-5
+            py-3
+
+            dark:border-slate-800
+          "
+        >
+          <p
+            className="
+              text-sm
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
             Showing{" "}
-            <span className="font-semibold text-slate-700">
+            <span
+              className="
+                font-semibold
+                text-slate-700
+                dark:text-slate-200
+              "
+            >
               {filteredUsers.length}
             </span>{" "}
             of{" "}
-            <span className="font-semibold text-slate-700">
+            <span
+              className="
+                font-semibold
+                text-slate-700
+                dark:text-slate-200
+              "
+            >
               {users.length}
             </span>{" "}
             users
           </p>
 
-          {(search || roleFilter !== "All") && (
+          {(search ||
+            roleFilter !== "All") && (
             <button
               onClick={clearFilters}
               className="
@@ -606,6 +839,9 @@ function Users() {
                 text-slate-500
                 transition
                 hover:text-slate-900
+
+                dark:text-slate-400
+                dark:hover:text-white
               "
             >
               Clear filters
@@ -613,355 +849,594 @@ function Users() {
           )}
         </div>
 
-        {/* Loading */}
+        {/* LOADING */}
+
         {loading ? (
           <div className="px-5 py-16 text-center">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-800" />
+            <div
+              className="
+                mx-auto
+                h-8
+                w-8
+                animate-spin
+                rounded-full
+                border-2
+                border-slate-200
+                border-t-slate-800
 
-            <p className="mt-4 text-sm text-slate-500">
+                dark:border-slate-700
+                dark:border-t-white
+              "
+            />
+
+            <p
+              className="
+                mt-4
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
               Loading users...
             </p>
           </div>
         ) : (
           <>
-            {/* Table */}
+            {/* TABLE */}
+
             <div className="overflow-x-auto">
               <table className="w-full min-w-[850px]">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50">
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      User
-                    </th>
+                  <tr
+                    className="
+                      border-b
+                      border-slate-200
+                      bg-slate-50
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Role
-                    </th>
+                      dark:border-slate-800
+                      dark:bg-slate-950
+                    "
+                  >
+                    {[
+                      "User",
+                      "Role",
+                      "Status",
+                      "Agents",
+                      "Last Active",
+                    ].map((heading) => (
+                      <th
+                        key={heading}
+                        className="
+                          px-5
+                          py-3
+                          text-left
+                          text-xs
+                          font-semibold
+                          uppercase
+                          tracking-wider
+                          text-slate-500
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Status
-                    </th>
+                          dark:text-slate-400
+                        "
+                      >
+                        {heading}
+                      </th>
+                    ))}
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Agents
-                    </th>
+                    <th
+                      className="
+                        px-5
+                        py-3
+                        text-right
+                        text-xs
+                        font-semibold
+                        uppercase
+                        tracking-wider
+                        text-slate-500
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                      Last Active
-                    </th>
-
-                    <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        dark:text-slate-400
+                      "
+                    >
                       Action
                     </th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {filteredUsers.map((user) => (
-                    <tr
-                      key={user.id}
-                      className="border-b border-slate-100 transition hover:bg-slate-50"
-                    >
-                      {/* User */}
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div
+                  {filteredUsers.map(
+                    (user) => (
+                      <tr
+                        key={user.id}
+                        className="
+                          border-b
+                          border-slate-100
+                          transition
+                          hover:bg-slate-50
+
+                          dark:border-slate-800
+                          dark:hover:bg-slate-800/50
+                        "
+                      >
+                        {/* USER */}
+
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`
+                                flex
+                                h-10
+                                w-10
+                                shrink-0
+                                items-center
+                                justify-center
+                                rounded-full
+                                text-sm
+                                font-semibold
+                                ${getAvatarClass(
+                                  user.role
+                                )}
+                              `}
+                            >
+                              {user.name
+                                .charAt(0)
+                                .toUpperCase()}
+                            </div>
+
+                            <div>
+                              <p
+                                className="
+                                  font-medium
+                                  text-slate-900
+
+                                  dark:text-white
+                                "
+                              >
+                                {user.name}
+                              </p>
+
+                              <p
+                                className="
+                                  text-sm
+                                  text-slate-500
+
+                                  dark:text-slate-400
+                                "
+                              >
+                                {user.email}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* ROLE */}
+
+                        <td className="px-5 py-4">
+                          <span
                             className={`
-                              flex
-                              h-10
-                              w-10
-                              shrink-0
-                              items-center
-                              justify-center
+                              inline-flex
                               rounded-full
-                              text-sm
+                              px-2.5
+                              py-1
+                              text-xs
                               font-semibold
-                              transition-colors
-                              duration-200
-                              ${getAvatarClass(user.role)}
+                              ${getRoleClass(
+                                user.role
+                              )}
                             `}
                           >
-                            {user.name
-                              .charAt(0)
-                              .toUpperCase()}
-                          </div>
-
-                          <div>
-                            <p className="font-medium text-slate-900">
-                              {user.name}
-                            </p>
-
-                            <p className="text-sm text-slate-500">
-                              {user.email}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Role */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getRoleClass(
-                            user.role
-                          )}`}
-                        >
-                          {user.role}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className="px-5 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusClass(
-                            user.status
-                          )}`}
-                        >
-                          <span className="h-1.5 w-1.5 rounded-full bg-current" />
-
-                          {user.status}
-                        </span>
-                      </td>
-
-                      {/* Agents */}
-                      <td className="px-5 py-4">
-                        {user.agents.length === 0 ? (
-                          <span className="text-sm text-slate-400">
-                            No agents
+                            {user.role}
                           </span>
-                        ) : (
-                          <div className="flex max-w-[260px] flex-wrap gap-1.5">
-                            {user.agents.slice(0, 3).map((agent) => (
-                              <span
-                                key={agent.id}
-                                title={`${agent.name} · ${agent.taskCount} tasks`}
-                                className="inline-flex max-w-[150px] items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700"
-                              >
-                                <span className="truncate">
-                                  {agent.name}
-                                </span>
-                              </span>
-                            ))}
+                        </td>
 
-                            {user.agents.length > 3 && (
-                              <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                                +{user.agents.length - 3}
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </td>
+                        {/* STATUS */}
 
-                      {/* Last Active */}
-                      <td className="px-5 py-4 text-sm text-slate-500">
-                        {user.lastActive}
-                      </td>
+                        <td className="px-5 py-4">
+                          <span
+                            className={`
+                              inline-flex
+                              items-center
+                              gap-1.5
+                              rounded-full
+                              px-2.5
+                              py-1
+                              text-xs
+                              font-semibold
+                              ${getStatusClass(
+                                user.status
+                              )}
+                            `}
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-current" />
 
-                      {/* Action */}
-                      <td className="relative px-5 py-4 text-right">
-                        <button
-                          onClick={(event) => {
-                            if (openMenu === user.id) {
-                              setOpenMenu(null)
-                              return
-                            }
+                            {user.status}
+                          </span>
+                        </td>
 
-                            const buttonRect =
-                              event.currentTarget.getBoundingClientRect()
+                        {/* AGENTS */}
 
-                            const menuWidth = 160
-                            const menuHeight = 132
-                            const gap = 8
-                            const viewportPadding = 12
-
-                            let left =
-                              buttonRect.right - menuWidth
-
-                            if (left < viewportPadding) {
-                              left = viewportPadding
-                            }
-
-                            if (
-                              left + menuWidth >
-                              window.innerWidth - viewportPadding
-                            ) {
-                              left =
-                                window.innerWidth -
-                                menuWidth -
-                                viewportPadding
-                            }
-
-                            const spaceBelow =
-                              window.innerHeight -
-                              buttonRect.bottom
-
-                            const spaceAbove =
-                              buttonRect.top
-
-                            let top
-
-                            if (
-                              spaceBelow >=
-                              menuHeight + gap
-                            ) {
-                              top =
-                                buttonRect.bottom + gap
-                            } else if (
-                              spaceAbove >=
-                              menuHeight + gap
-                            ) {
-                              top =
-                                buttonRect.top -
-                                menuHeight -
-                                gap
-                            } else {
-                              top = Math.max(
-                                viewportPadding,
-                                Math.min(
-                                  buttonRect.bottom + gap,
-                                  window.innerHeight -
-                                    menuHeight -
-                                    viewportPadding
-                                )
-                              )
-                            }
-
-                            setMenuPosition({
-                              top,
-                              left,
-                            })
-
-                            setOpenMenu(user.id)
-                          }}
-                          disabled={deletingId === user.id}
-                          className="
-                            inline-flex
-                            h-9
-                            w-9
-                            items-center
-                            justify-center
-                            rounded-lg
-                            text-lg
-                            text-slate-400
-                            transition
-                            hover:bg-slate-100
-                            hover:text-slate-700
-                            disabled:cursor-not-allowed
-                            disabled:opacity-50
-                          "
-                          aria-label={`Actions for ${user.name}`}
-                        >
-                          ⋮
-                        </button>
-
-                        {openMenu === user.id &&
-                          createPortal(
-                            <div
+                        <td className="px-5 py-4">
+                          {user.agents.length ===
+                          0 ? (
+                            <span
                               className="
-                                fixed
-                                z-[100]
-                                w-40
-                                overflow-hidden
-                                rounded-lg
-                                border
-                                border-slate-200
-                                bg-white
-                                py-1
-                                text-left
-                                shadow-xl
+                                text-sm
+                                text-slate-400
+                                dark:text-slate-500
                               "
-                              style={{
-                                top: `${menuPosition.top}px`,
-                                left: `${menuPosition.left}px`,
-                              }}
                             >
-                              {/* View */}
+                              No agents
+                            </span>
+                          ) : (
+                            <div className="flex max-w-[260px] flex-wrap gap-1.5">
+                              {user.agents
+                                .slice(0, 3)
+                                .map(
+                                  (agent) => (
+                                    <span
+                                      key={
+                                        agent.id
+                                      }
+                                      title={`${agent.name} · ${agent.taskCount} tasks`}
+                                      className="
+                                        inline-flex
+                                        max-w-[150px]
+                                        items-center
+                                        rounded-full
+                                        bg-slate-100
+                                        px-2.5
+                                        py-1
+                                        text-xs
+                                        font-medium
+                                        text-slate-700
 
-                              <button
-                                onClick={() => {
-                                  setSelectedUser(user)
-                                  setOpenMenu(null)
-                                }}
-                                className="
-                                  block
-                                  w-full
-                                  px-4
-                                  py-2.5
-                                  text-sm
-                                  text-slate-700
-                                  transition
-                                  hover:bg-slate-50
-                                "
-                              >
-                                View Details
-                              </button>
+                                        dark:bg-slate-800
+                                        dark:text-slate-300
+                                      "
+                                    >
+                                      <span className="truncate">
+                                        {
+                                          agent.name
+                                        }
+                                      </span>
+                                    </span>
+                                  )
+                                )}
 
-                              {/* Edit */}
+                              {user.agents
+                                .length >
+                                3 && (
+                                <span
+                                  className="
+                                    inline-flex
+                                    items-center
+                                    rounded-full
+                                    bg-blue-50
+                                    px-2.5
+                                    py-1
+                                    text-xs
+                                    font-semibold
+                                    text-blue-700
 
-                              <button
-                                onClick={() =>
-                                  openEditUser(user)
-                                }
-                                className="
-                                  block
-                                  w-full
-                                  px-4
-                                  py-2.5
-                                  text-sm
-                                  text-slate-700
-                                  transition
-                                  hover:bg-slate-50
-                                "
-                              >
-                                Edit User
-                              </button>
-
-                              {/* Delete */}
-
-                              <button
-                                onClick={() =>
-                                  handleDelete(user.id)
-                                }
-                                disabled={
-                                  deletingId === user.id
-                                }
-                                className="
-                                  block
-                                  w-full
-                                  px-4
-                                  py-2.5
-                                  text-sm
-                                  text-red-600
-                                  transition
-                                  hover:bg-red-50
-                                  disabled:cursor-not-allowed
-                                  disabled:opacity-50
-                                "
-                              >
-                                {deletingId === user.id
-                                  ? "Deleting..."
-                                  : "Delete User"}
-                              </button>
-                            </div>,
-                            document.body
+                                    dark:bg-blue-950/50
+                                    dark:text-blue-400
+                                  "
+                                >
+                                  +
+                                  {user.agents
+                                    .length -
+                                    3}
+                                </span>
+                              )}
+                            </div>
                           )}
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+
+                        {/* LAST ACTIVE */}
+
+                        <td
+                          className="
+                            px-5
+                            py-4
+                            text-sm
+                            text-slate-500
+
+                            dark:text-slate-400
+                          "
+                        >
+                          {user.lastActive}
+                        </td>
+
+                        {/* ACTION */}
+
+                        <td className="relative px-5 py-4 text-right">
+                          <button
+                            onClick={(event) => {
+                              if (
+                                openMenu ===
+                                user.id
+                              ) {
+                                setOpenMenu(
+                                  null
+                                )
+                                return
+                              }
+
+                              const buttonRect =
+                                event.currentTarget.getBoundingClientRect()
+
+                              const menuWidth =
+                                160
+                              const menuHeight =
+                                132
+                              const gap = 8
+                              const viewportPadding =
+                                12
+
+                              let left =
+                                buttonRect.right -
+                                menuWidth
+
+                              if (
+                                left <
+                                viewportPadding
+                              ) {
+                                left =
+                                  viewportPadding
+                              }
+
+                              if (
+                                left +
+                                  menuWidth >
+                                window.innerWidth -
+                                  viewportPadding
+                              ) {
+                                left =
+                                  window.innerWidth -
+                                  menuWidth -
+                                  viewportPadding
+                              }
+
+                              const spaceBelow =
+                                window.innerHeight -
+                                buttonRect.bottom
+
+                              const spaceAbove =
+                                buttonRect.top
+
+                              let top
+
+                              if (
+                                spaceBelow >=
+                                menuHeight +
+                                  gap
+                              ) {
+                                top =
+                                  buttonRect.bottom +
+                                  gap
+                              } else if (
+                                spaceAbove >=
+                                menuHeight +
+                                  gap
+                              ) {
+                                top =
+                                  buttonRect.top -
+                                  menuHeight -
+                                  gap
+                              } else {
+                                top =
+                                  Math.max(
+                                    viewportPadding,
+                                    Math.min(
+                                      buttonRect.bottom +
+                                        gap,
+                                      window.innerHeight -
+                                        menuHeight -
+                                        viewportPadding
+                                    )
+                                  )
+                              }
+
+                              setMenuPosition({
+                                top,
+                                left,
+                              })
+
+                              setOpenMenu(
+                                user.id
+                              )
+                            }}
+                            disabled={
+                              deletingId ===
+                              user.id
+                            }
+                            className="
+                              inline-flex
+                              h-9
+                              w-9
+                              items-center
+                              justify-center
+                              rounded-lg
+                              text-lg
+                              text-slate-400
+                              transition
+                              hover:bg-slate-100
+                              hover:text-slate-700
+                              disabled:cursor-not-allowed
+                              disabled:opacity-50
+
+                              dark:text-slate-500
+                              dark:hover:bg-slate-800
+                              dark:hover:text-white
+                            "
+                            aria-label={`Actions for ${user.name}`}
+                          >
+                            ⋮
+                          </button>
+
+                          {openMenu ===
+                            user.id &&
+                            createPortal(
+                              <div
+                                className="
+                                  fixed
+                                  z-[100]
+                                  w-40
+                                  overflow-hidden
+                                  rounded-lg
+                                  border
+                                  border-slate-200
+                                  bg-white
+                                  py-1
+                                  text-left
+                                  shadow-xl
+
+                                  dark:border-slate-700
+                                  dark:bg-slate-900
+                                "
+                                style={{
+                                  top: `${menuPosition.top}px`,
+                                  left: `${menuPosition.left}px`,
+                                }}
+                              >
+                                <button
+                                  onClick={() => {
+                                    setSelectedUser(
+                                      user
+                                    )
+                                    setOpenMenu(
+                                      null
+                                    )
+                                  }}
+                                  className="
+                                    block
+                                    w-full
+                                    px-4
+                                    py-2.5
+                                    text-left
+                                    text-sm
+                                    text-slate-700
+                                    transition
+                                    hover:bg-slate-50
+
+                                    dark:text-slate-300
+                                    dark:hover:bg-slate-800
+                                  "
+                                >
+                                  View Details
+                                </button>
+
+                                <button
+                                  onClick={() =>
+                                    openEditUser(
+                                      user
+                                    )
+                                  }
+                                  className="
+                                    block
+                                    w-full
+                                    px-4
+                                    py-2.5
+                                    text-left
+                                    text-sm
+                                    text-slate-700
+                                    transition
+                                    hover:bg-slate-50
+
+                                    dark:text-slate-300
+                                    dark:hover:bg-slate-800
+                                  "
+                                >
+                                  Edit User
+                                </button>
+
+                                <button
+                                  onClick={() =>
+                                    handleDelete(
+                                      user.id
+                                    )
+                                  }
+                                  disabled={
+                                    deletingId ===
+                                    user.id
+                                  }
+                                  className="
+                                    block
+                                    w-full
+                                    px-4
+                                    py-2.5
+                                    text-left
+                                    text-sm
+                                    text-red-600
+                                    transition
+                                    hover:bg-red-50
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-50
+
+                                    dark:text-red-400
+                                    dark:hover:bg-red-950/40
+                                  "
+                                >
+                                  {deletingId ===
+                                  user.id
+                                    ? "Deleting..."
+                                    : "Delete User"}
+                                </button>
+                              </div>,
+                              document.body
+                            )}
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
 
-              {/* Empty State */}
-              {filteredUsers.length === 0 && (
+              {/* EMPTY STATE */}
+
+              {filteredUsers.length ===
+                0 && (
                 <div className="px-5 py-16 text-center">
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-400">
+                  <div
+                    className="
+                      mx-auto
+                      mb-3
+                      flex
+                      h-12
+                      w-12
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-slate-100
+                      text-xl
+                      text-slate-400
+
+                      dark:bg-slate-800
+                      dark:text-slate-500
+                    "
+                  >
                     ?
                   </div>
 
-                  <h3 className="font-semibold text-slate-800">
+                  <h3
+                    className="
+                      font-semibold
+                      text-slate-800
+                      dark:text-white
+                    "
+                  >
                     No users found
                   </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
-                    Try changing your search or filters.
+                  <p
+                    className="
+                      mt-1
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
+                    Try changing your
+                    search or filters.
                   </p>
                 </div>
               )}
@@ -985,35 +1460,71 @@ function Users() {
             justify-center
             bg-slate-900/40
             p-4
+            backdrop-blur-[2px]
           "
-          onClick={() => setSelectedUser(null)}
+          onClick={() =>
+            setSelectedUser(null)
+          }
         >
           <div
             className="
               w-full
               max-w-md
               rounded-xl
+              border
+              border-transparent
               bg-white
               shadow-2xl
+
+              dark:border-slate-800
+              dark:bg-slate-900
             "
             onClick={(event) =>
               event.stopPropagation()
             }
           >
-            {/* Header */}
-            <div className="flex items-start justify-between border-b border-slate-200 p-6">
+            {/* HEADER */}
+
+            <div
+              className="
+                flex
+                items-start
+                justify-between
+                border-b
+                border-slate-200
+                p-6
+
+                dark:border-slate-800
+              "
+            >
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2
+                  className="
+                    text-lg
+                    font-semibold
+                    text-slate-900
+                    dark:text-white
+                  "
+                >
                   User Details
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
                   View account information
                 </p>
               </div>
 
               <button
-                onClick={() => setSelectedUser(null)}
+                onClick={() =>
+                  setSelectedUser(null)
+                }
                 className="
                   flex
                   h-8
@@ -1025,13 +1536,18 @@ function Users() {
                   transition
                   hover:bg-slate-100
                   hover:text-slate-700
+
+                  dark:text-slate-500
+                  dark:hover:bg-slate-800
+                  dark:hover:text-white
                 "
               >
                 ×
               </button>
             </div>
 
-            {/* User Profile */}
+            {/* PROFILE */}
+
             <div className="p-6">
               <div className="flex items-center gap-4">
                 <div
@@ -1044,9 +1560,9 @@ function Users() {
                     rounded-full
                     text-lg
                     font-semibold
-                    transition-colors
-                    duration-200
-                    ${getAvatarClass(selectedUser.role)}
+                    ${getAvatarClass(
+                      selectedUser.role
+                    )}
                   `}
                 >
                   {selectedUser.name
@@ -1055,112 +1571,307 @@ function Users() {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-slate-900">
+                  <h3
+                    className="
+                      font-semibold
+                      text-slate-900
+                      dark:text-white
+                    "
+                  >
                     {selectedUser.name}
                   </h3>
 
-                  <p className="text-sm text-slate-500">
+                  <p
+                    className="
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
                     {selectedUser.email}
                   </p>
                 </div>
               </div>
 
-              {/* Details */}
-              <div className="mt-6 rounded-lg border border-slate-200">
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                  <span className="text-sm text-slate-500">
+              {/* DETAILS */}
+
+              <div
+                className="
+                  mt-6
+                  rounded-lg
+                  border
+                  border-slate-200
+
+                  dark:border-slate-700
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    border-b
+                    border-slate-100
+                    px-4
+                    py-3
+
+                    dark:border-slate-800
+                  "
+                >
+                  <span
+                    className="
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
                     User ID
                   </span>
 
-                  <span className="text-sm font-semibold text-slate-800">
+                  <span
+                    className="
+                      text-sm
+                      font-semibold
+                      text-slate-800
+                      dark:text-slate-200
+                    "
+                  >
                     #{selectedUser.id}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                  <span className="text-sm text-slate-500">
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    border-b
+                    border-slate-100
+                    px-4
+                    py-3
+
+                    dark:border-slate-800
+                  "
+                >
+                  <span
+                    className="
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
                     Role
                   </span>
 
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getRoleClass(
-                      selectedUser.role
-                    )}`}
+                    className={`
+                      rounded-full
+                      px-2.5
+                      py-1
+                      text-xs
+                      font-semibold
+                      ${getRoleClass(
+                        selectedUser.role
+                      )}
+                    `}
                   >
                     {selectedUser.role}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                  <span className="text-sm text-slate-500">
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    border-b
+                    border-slate-100
+                    px-4
+                    py-3
+
+                    dark:border-slate-800
+                  "
+                >
+                  <span
+                    className="
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
                     Status
                   </span>
 
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusClass(
-                      selectedUser.status
-                    )}`}
+                    className={`
+                      rounded-full
+                      px-2.5
+                      py-1
+                      text-xs
+                      font-semibold
+                      ${getStatusClass(
+                        selectedUser.status
+                      )}
+                    `}
                   >
                     {selectedUser.status}
                   </span>
                 </div>
 
-                <div className="border-b border-slate-100 px-4 py-4">
+                <div
+                  className="
+                    border-b
+                    border-slate-100
+                    px-4
+                    py-4
+
+                    dark:border-slate-800
+                  "
+                >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-500">
+                    <span
+                      className="
+                        text-sm
+                        text-slate-500
+                        dark:text-slate-400
+                      "
+                    >
                       Assigned Agents
                     </span>
 
-                    <span className="text-sm font-semibold text-slate-800">
-                      {selectedUser.agents.length}
+                    <span
+                      className="
+                        text-sm
+                        font-semibold
+                        text-slate-800
+                        dark:text-slate-200
+                      "
+                    >
+                      {
+                        selectedUser
+                          .agents.length
+                      }
                     </span>
                   </div>
 
-                  {selectedUser.agents.length === 0 ? (
-                    <p className="mt-2 text-sm text-slate-400">
-                      This user has not used any agent yet.
+                  {selectedUser.agents
+                    .length === 0 ? (
+                    <p
+                      className="
+                        mt-2
+                        text-sm
+                        text-slate-400
+                        dark:text-slate-500
+                      "
+                    >
+                      This user has not
+                      used any agent yet.
                     </p>
                   ) : (
                     <div className="mt-3 space-y-2">
-                      {selectedUser.agents.map((agent) => (
-                        <div
-                          key={agent.id}
-                          className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5"
-                        >
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-slate-800">
-                                {agent.name}
-                              </p>
+                      {selectedUser.agents.map(
+                        (agent) => (
+                          <div
+                            key={agent.id}
+                            className="
+                              rounded-lg
+                              border
+                              border-slate-200
+                              bg-slate-50
+                              px-3
+                              py-2.5
 
-                              <p className="mt-0.5 truncate text-xs text-slate-500">
-                                {agent.slug}
-                              </p>
+                              dark:border-slate-700
+                              dark:bg-slate-800
+                            "
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <p
+                                  className="
+                                    truncate
+                                    text-sm
+                                    font-semibold
+                                    text-slate-800
+
+                                    dark:text-white
+                                  "
+                                >
+                                  {agent.name}
+                                </p>
+
+                                <p
+                                  className="
+                                    mt-0.5
+                                    truncate
+                                    text-xs
+                                    text-slate-500
+
+                                    dark:text-slate-400
+                                  "
+                                >
+                                  {agent.slug}
+                                </p>
+                              </div>
+
+                              <span
+                                className="
+                                  shrink-0
+                                  rounded-full
+                                  bg-white
+                                  px-2.5
+                                  py-1
+                                  text-xs
+                                  font-medium
+                                  text-slate-600
+
+                                  dark:bg-slate-900
+                                  dark:text-slate-300
+                                "
+                              >
+                                {
+                                  agent.taskCount
+                                }{" "}
+                                tasks
+                              </span>
                             </div>
-
-                            <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-slate-600">
-                              {agent.taskCount} tasks
-                            </span>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   )}
                 </div>
 
                 <div className="flex items-center justify-between px-4 py-3">
-                  <span className="text-sm text-slate-500">
+                  <span
+                    className="
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
                     Last Active
                   </span>
 
-                  <span className="text-sm font-medium text-slate-800">
-                    {selectedUser.lastActive}
+                  <span
+                    className="
+                      text-sm
+                      font-medium
+                      text-slate-800
+                      dark:text-slate-200
+                    "
+                  >
+                    {
+                      selectedUser.lastActive
+                    }
                   </span>
                 </div>
               </div>
 
               <button
-                onClick={() => setSelectedUser(null)}
+                onClick={() =>
+                  setSelectedUser(null)
+                }
                 className="
                   mt-6
                   w-full
@@ -1173,6 +1884,10 @@ function Users() {
                   text-white
                   transition
                   hover:bg-slate-800
+
+                  dark:bg-white
+                  dark:text-slate-900
+                  dark:hover:bg-slate-200
                 "
               >
                 Close
@@ -1197,6 +1912,7 @@ function Users() {
             justify-center
             bg-slate-900/40
             p-4
+            backdrop-blur-[2px]
           "
           onClick={() => {
             if (!submitting) {
@@ -1209,27 +1925,59 @@ function Users() {
               w-full
               max-w-lg
               rounded-xl
+              border
+              border-transparent
               bg-white
               shadow-2xl
+
+              dark:border-slate-800
+              dark:bg-slate-900
             "
             onClick={(event) =>
               event.stopPropagation()
             }
           >
-            {/* Header */}
-            <div className="flex items-start justify-between border-b border-slate-200 p-6">
+            <div
+              className="
+                flex
+                items-start
+                justify-between
+                border-b
+                border-slate-200
+                p-6
+
+                dark:border-slate-800
+              "
+            >
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2
+                  className="
+                    text-lg
+                    font-semibold
+                    text-slate-900
+                    dark:text-white
+                  "
+                >
                   Edit User
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  Update this user's account information
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
+                  Update this user's account
+                  information
                 </p>
               </div>
 
               <button
-                onClick={() => setEditingUser(null)}
+                onClick={() =>
+                  setEditingUser(null)
+                }
                 disabled={submitting}
                 className="
                   flex
@@ -1242,23 +1990,32 @@ function Users() {
                   transition
                   hover:bg-slate-100
                   hover:text-slate-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-50
+
+                  dark:text-slate-500
+                  dark:hover:bg-slate-800
+                  dark:hover:text-white
                 "
               >
                 ×
               </button>
             </div>
 
-            {/* Edit Form */}
             <form
               onSubmit={handleEditUser}
               className="p-6"
             >
               <div className="space-y-4">
-                {/* Name */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Full Name
                   </label>
 
@@ -1268,29 +2025,21 @@ function Users() {
                     value={editForm.name}
                     onChange={handleEditChange}
                     disabled={submitting}
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-900
-                      outline-none
-                      transition
-                      focus:border-slate-400
-                      focus:ring-2
-                      focus:ring-slate-100
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   />
                 </div>
 
-                {/* Email */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Email
                   </label>
 
@@ -1300,29 +2049,21 @@ function Users() {
                     value={editForm.email}
                     onChange={handleEditChange}
                     disabled={submitting}
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-900
-                      outline-none
-                      transition
-                      focus:border-slate-400
-                      focus:ring-2
-                      focus:ring-slate-100
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   />
                 </div>
 
-                {/* Role */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Role
                   </label>
 
@@ -1331,20 +2072,7 @@ function Users() {
                     value={editForm.role}
                     onChange={handleEditChange}
                     disabled={submitting}
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-700
-                      outline-none
-                      focus:border-slate-400
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   >
                     <option value="User">
                       User
@@ -1356,28 +2084,69 @@ function Users() {
                   </select>
                 </div>
 
-                {/* Info */}
-                <div className="rounded-lg bg-slate-50 p-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <div
+                  className="
+                    rounded-lg
+                    bg-slate-50
+                    p-4
+
+                    dark:bg-slate-800
+                  "
+                >
+                  <p
+                    className="
+                      text-xs
+                      font-medium
+                      uppercase
+                      tracking-wider
+                      text-slate-400
+                    "
+                  >
                     User ID
                   </p>
 
-                  <p className="mt-1 text-sm font-semibold text-slate-700">
+                  <p
+                    className="
+                      mt-1
+                      text-sm
+                      font-semibold
+                      text-slate-700
+
+                      dark:text-slate-200
+                    "
+                  >
                     #{editingUser.id}
                   </p>
                 </div>
 
-                {/* Error */}
                 {formError && (
-                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                    <p className="text-sm font-medium text-red-600">
+                  <div
+                    className="
+                      rounded-lg
+                      border
+                      border-red-200
+                      bg-red-50
+                      px-4
+                      py-3
+
+                      dark:border-red-900
+                      dark:bg-red-950/40
+                    "
+                  >
+                    <p
+                      className="
+                        text-sm
+                        font-medium
+                        text-red-600
+                        dark:text-red-400
+                      "
+                    >
                       {formError}
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Buttons */}
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
@@ -1398,8 +2167,12 @@ function Users() {
                     transition
                     hover:bg-slate-50
                     hover:text-slate-900
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
+
+                    dark:border-slate-700
+                    dark:bg-slate-900
+                    dark:text-slate-300
+                    dark:hover:bg-slate-800
+                    dark:hover:text-white
                   "
                 >
                   Cancel
@@ -1419,9 +2192,10 @@ function Users() {
                     shadow-sm
                     transition
                     hover:bg-slate-800
-                    hover:shadow-md
-                    disabled:cursor-not-allowed
-                    disabled:opacity-60
+
+                    dark:bg-white
+                    dark:text-slate-900
+                    dark:hover:bg-slate-200
                   "
                 >
                   {submitting
@@ -1449,6 +2223,7 @@ function Users() {
             justify-center
             bg-slate-900/40
             p-4
+            backdrop-blur-[2px]
           "
           onClick={() => {
             if (!submitting) {
@@ -1461,21 +2236,50 @@ function Users() {
               w-full
               max-w-lg
               rounded-xl
+              border
+              border-transparent
               bg-white
               shadow-2xl
+
+              dark:border-slate-800
+              dark:bg-slate-900
             "
             onClick={(event) =>
               event.stopPropagation()
             }
           >
-            {/* Header */}
-            <div className="flex items-start justify-between border-b border-slate-200 p-6">
+            <div
+              className="
+                flex
+                items-start
+                justify-between
+                border-b
+                border-slate-200
+                p-6
+
+                dark:border-slate-800
+              "
+            >
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2
+                  className="
+                    text-lg
+                    font-semibold
+                    text-slate-900
+                    dark:text-white
+                  "
+                >
                   Add New User
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
                   Create a new user account
                 </p>
               </div>
@@ -1496,23 +2300,32 @@ function Users() {
                   transition
                   hover:bg-slate-100
                   hover:text-slate-700
-                  disabled:cursor-not-allowed
-                  disabled:opacity-50
+
+                  dark:text-slate-500
+                  dark:hover:bg-slate-800
+                  dark:hover:text-white
                 "
               >
                 ×
               </button>
             </div>
 
-            {/* Form */}
             <form
               onSubmit={handleAddUser}
               className="p-6"
             >
               <div className="space-y-4">
-                {/* Name */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Full Name
                   </label>
 
@@ -1523,30 +2336,21 @@ function Users() {
                     onChange={handleNewUserChange}
                     disabled={submitting}
                     placeholder="Enter full name"
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-slate-400
-                      focus:ring-2
-                      focus:ring-slate-100
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   />
                 </div>
 
-                {/* Email */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Email
                   </label>
 
@@ -1557,30 +2361,21 @@ function Users() {
                     onChange={handleNewUserChange}
                     disabled={submitting}
                     placeholder="Enter email address"
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-slate-400
-                      focus:ring-2
-                      focus:ring-slate-100
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   />
                 </div>
 
-                {/* Role */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Role
                   </label>
 
@@ -1589,20 +2384,7 @@ function Users() {
                     value={newUser.role}
                     onChange={handleNewUserChange}
                     disabled={submitting}
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-700
-                      outline-none
-                      focus:border-slate-400
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   >
                     <option value="User">
                       User
@@ -1614,9 +2396,17 @@ function Users() {
                   </select>
                 </div>
 
-                {/* Password */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Password
                   </label>
 
@@ -1627,72 +2417,65 @@ function Users() {
                     onChange={handleNewUserChange}
                     disabled={submitting}
                     placeholder="Enter password"
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-slate-400
-                      focus:ring-2
-                      focus:ring-slate-100
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   />
                 </div>
 
-                {/* Confirm Password */}
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                  <label
+                    className="
+                      mb-1.5
+                      block
+                      text-sm
+                      font-medium
+                      text-slate-700
+                      dark:text-slate-300
+                    "
+                  >
                     Confirm Password
                   </label>
 
                   <input
                     type="password"
                     name="confirmPassword"
-                    value={newUser.confirmPassword}
+                    value={
+                      newUser.confirmPassword
+                    }
                     onChange={handleNewUserChange}
                     disabled={submitting}
                     placeholder="Confirm password"
-                    className="
-                      w-full
-                      rounded-lg
-                      border
-                      border-slate-200
-                      bg-white
-                      px-3
-                      py-2.5
-                      text-sm
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-400
-                      focus:border-slate-400
-                      focus:ring-2
-                      focus:ring-slate-100
-                      disabled:bg-slate-50
-                    "
+                    className={inputClass}
                   />
                 </div>
 
-                {/* Error */}
                 {formError && (
-                  <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-                    <p className="text-sm font-medium text-red-600">
+                  <div
+                    className="
+                      rounded-lg
+                      border
+                      border-red-200
+                      bg-red-50
+                      px-4
+                      py-3
+
+                      dark:border-red-900
+                      dark:bg-red-950/40
+                    "
+                  >
+                    <p
+                      className="
+                        text-sm
+                        font-medium
+                        text-red-600
+                        dark:text-red-400
+                      "
+                    >
                       {formError}
                     </p>
                   </div>
                 )}
               </div>
 
-              {/* Buttons */}
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
@@ -1713,8 +2496,12 @@ function Users() {
                     transition
                     hover:bg-slate-50
                     hover:text-slate-900
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
+
+                    dark:border-slate-700
+                    dark:bg-slate-900
+                    dark:text-slate-300
+                    dark:hover:bg-slate-800
+                    dark:hover:text-white
                   "
                 >
                   Cancel
@@ -1734,9 +2521,10 @@ function Users() {
                     shadow-sm
                     transition
                     hover:bg-slate-800
-                    hover:shadow-md
-                    disabled:cursor-not-allowed
-                    disabled:opacity-60
+
+                    dark:bg-white
+                    dark:text-slate-900
+                    dark:hover:bg-slate-200
                   "
                 >
                   {submitting

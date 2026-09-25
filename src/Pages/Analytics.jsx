@@ -142,7 +142,10 @@ const buildDailyTaskData = (tasks) => {
     )
 
     const dayEnd = new Date(dayStart)
-    dayEnd.setDate(dayEnd.getDate() + 1)
+
+    dayEnd.setDate(
+      dayEnd.getDate() + 1
+    )
 
     let completed = 0
     let failed = 0
@@ -280,7 +283,10 @@ const buildAgentPerformance = (tasks) => {
 }
 
 const formatPercent = (value) => {
-  if (value === null || value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
     return "-"
   }
 
@@ -293,6 +299,52 @@ function Analytics() {
 
   const [loading, setLoading] = useState(true)
   const [pageError, setPageError] = useState("")
+
+  // ============================================================
+  // THEME
+  // ============================================================
+
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.classList.contains(
+      "dark"
+    )
+  )
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(
+        document.documentElement.classList.contains(
+          "dark"
+        )
+      )
+    })
+
+    observer.observe(
+      document.documentElement,
+      {
+        attributes: true,
+        attributeFilter: ["class"],
+      }
+    )
+
+    return () => observer.disconnect()
+  }, [])
+
+  const chartTextColor = isDark
+    ? "#94A3B8"
+    : "#64748B"
+
+  const chartGridColor = isDark
+    ? "#334155"
+    : "#E2E8F0"
+
+  const chartTooltipBg = isDark
+    ? "#0F172A"
+    : "#FFFFFF"
+
+  const chartTooltipBorder = isDark
+    ? "#334155"
+    : "#E2E8F0"
 
   // ============================================================
   // LOAD ANALYTICS DATA
@@ -436,7 +488,8 @@ function Analytics() {
   const topSuccessAgent =
     agentPerformance
       .filter(
-        (agent) => agent.successRate !== null
+        (agent) =>
+          agent.successRate !== null
       )
       .sort((a, b) => {
         if (
@@ -453,12 +506,27 @@ function Analytics() {
       })[0] || null
 
   const mostActiveAgent =
-    agentPerformance.sort(
+    [...agentPerformance].sort(
       (a, b) => b.total - a.total
     )[0] || null
 
+  // ============================================================
+  // RETURN
+  // ============================================================
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div
+      className="
+        min-h-screen
+        bg-slate-50
+        p-6
+        text-slate-900
+        transition-colors
+        duration-200
+        dark:bg-slate-950
+        dark:text-slate-100
+      "
+    >
 
       {/* ====================================================== */}
       {/* HEADER */}
@@ -467,19 +535,39 @@ function Analytics() {
       <div className="mb-6 flex items-start justify-between gap-4">
 
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
             Analytics
           </h1>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Monitor system performance and task analytics
           </p>
+
         </div>
 
         {!loading && !pageError && (
-          <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700">
+          <span
+            className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-full
+              bg-green-100
+              px-3
+              py-1.5
+              text-xs
+              font-semibold
+              text-green-700
+              dark:bg-green-500/15
+              dark:text-green-400
+            "
+          >
+
             <span className="h-1.5 w-1.5 rounded-full bg-current" />
+
             Live data
+
           </span>
         )}
 
@@ -490,10 +578,24 @@ function Analytics() {
       {/* ====================================================== */}
 
       {pageError && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-          <p className="text-sm font-medium text-red-600">
+        <div
+          className="
+            mb-6
+            rounded-lg
+            border
+            border-red-200
+            bg-red-50
+            px-4
+            py-3
+            dark:border-red-500/30
+            dark:bg-red-500/10
+          "
+        >
+
+          <p className="text-sm font-medium text-red-600 dark:text-red-400">
             {pageError}
           </p>
+
         </div>
       )}
 
@@ -505,19 +607,36 @@ function Analytics() {
 
         {/* Total Tasks */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            duration-200
+            hover:-translate-y-0.5
+            hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Total Tasks
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-slate-900">
+          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
             {loading
               ? "..."
               : tasks.length.toLocaleString()}
           </p>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-500">
             From all users
           </p>
 
@@ -525,13 +644,30 @@ function Analytics() {
 
         {/* Success Rate */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            duration-200
+            hover:-translate-y-0.5
+            hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Success Rate
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-slate-900">
+          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
             {loading
               ? "..."
               : formatPercent(
@@ -539,7 +675,7 @@ function Analytics() {
                 )}
           </p>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-500">
             Completed vs failed
           </p>
 
@@ -547,19 +683,36 @@ function Analytics() {
 
         {/* Failed Tasks */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            duration-200
+            hover:-translate-y-0.5
+            hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Failed Tasks
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-red-600">
+          <p className="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">
             {loading
               ? "..."
               : failedTasks.toLocaleString()}
           </p>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-500">
             Need attention
           </p>
 
@@ -567,19 +720,36 @@ function Analytics() {
 
         {/* Active Agents */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            transition-all
+            duration-200
+            hover:-translate-y-0.5
+            hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Active Agents
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-slate-900">
+          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
             {loading
               ? "..."
               : activeAgents.toLocaleString()}
           </p>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-500">
             Currently active
           </p>
 
@@ -595,15 +765,28 @@ function Analytics() {
 
         {/* Task Performance */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            xl:col-span-2
+          "
+        >
 
           <div className="mb-5">
 
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
               Task Performance
             </h2>
 
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Completed and failed tasks over the last 7 days
             </p>
 
@@ -612,7 +795,7 @@ function Analytics() {
           <div className="h-[320px] w-full">
 
             {taskData.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-sm text-slate-500">
+              <div className="flex h-full items-center justify-center text-sm text-slate-500 dark:text-slate-400">
                 No task data available.
               </div>
             ) : (
@@ -620,28 +803,58 @@ function Analytics() {
                 width="100%"
                 height="100%"
               >
+
                 <BarChart data={taskData}>
 
                   <CartesianGrid
                     strokeDasharray="3 3"
                     vertical={false}
+                    stroke={chartGridColor}
                   />
 
                   <XAxis
                     dataKey="name"
                     axisLine={false}
                     tickLine={false}
+                    tick={{
+                      fill: chartTextColor,
+                      fontSize: 12,
+                    }}
                   />
 
                   <YAxis
                     axisLine={false}
                     tickLine={false}
                     allowDecimals={false}
+                    tick={{
+                      fill: chartTextColor,
+                      fontSize: 12,
+                    }}
                   />
 
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor:
+                        chartTooltipBg,
+                      borderColor:
+                        chartTooltipBorder,
+                      borderRadius: "8px",
+                      color: isDark
+                        ? "#E2E8F0"
+                        : "#0F172A",
+                    }}
+                    labelStyle={{
+                      color: isDark
+                        ? "#E2E8F0"
+                        : "#0F172A",
+                    }}
+                  />
 
-                  <Legend />
+                  <Legend
+                    wrapperStyle={{
+                      color: chartTextColor,
+                    }}
+                  />
 
                   <Bar
                     dataKey="completed"
@@ -668,6 +881,7 @@ function Analytics() {
                   />
 
                 </BarChart>
+
               </ResponsiveContainer>
             )}
 
@@ -677,15 +891,27 @@ function Analytics() {
 
         {/* Agent Distribution */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+          "
+        >
 
           <div className="mb-3">
 
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
               Agent Usage
             </h2>
 
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Task distribution by agent
             </p>
 
@@ -694,7 +920,7 @@ function Analytics() {
           <div className="h-[320px] w-full">
 
             {agentData.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-sm text-slate-500">
+              <div className="flex h-full items-center justify-center text-sm text-slate-500 dark:text-slate-400">
                 No agent usage data available.
               </div>
             ) : (
@@ -702,6 +928,7 @@ function Analytics() {
                 width="100%"
                 height="100%"
               >
+
                 <PieChart>
 
                   <Pie
@@ -714,6 +941,7 @@ function Analytics() {
                     innerRadius={55}
                     paddingAngle={3}
                   >
+
                     {agentData.map(
                       (entry, index) => (
                         <Cell
@@ -722,13 +950,35 @@ function Analytics() {
                         />
                       )
                     )}
+
                   </Pie>
 
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor:
+                        chartTooltipBg,
+                      borderColor:
+                        chartTooltipBorder,
+                      borderRadius: "8px",
+                      color: isDark
+                        ? "#E2E8F0"
+                        : "#0F172A",
+                    }}
+                    labelStyle={{
+                      color: isDark
+                        ? "#E2E8F0"
+                        : "#0F172A",
+                    }}
+                  />
 
-                  <Legend />
+                  <Legend
+                    wrapperStyle={{
+                      color: chartTextColor,
+                    }}
+                  />
 
                 </PieChart>
+
               </ResponsiveContainer>
             )}
 
@@ -742,15 +992,28 @@ function Analytics() {
       {/* SUCCESS RATE */}
       {/* ====================================================== */}
 
-      <div className="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div
+        className="
+          mb-6
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          p-5
+          shadow-sm
+          dark:border-slate-800
+          dark:bg-slate-900
+          dark:shadow-none
+        "
+      >
 
         <div className="mb-5">
 
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
             Success Rate
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Completed vs failed task rate over the last 7 days
           </p>
 
@@ -759,7 +1022,7 @@ function Analytics() {
         <div className="h-[300px] w-full">
 
           {performanceData.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-sm text-slate-500">
+            <div className="flex h-full items-center justify-center text-sm text-slate-500 dark:text-slate-400">
               No performance data available.
             </div>
           ) : (
@@ -767,26 +1030,51 @@ function Analytics() {
               width="100%"
               height="100%"
             >
+
               <LineChart data={performanceData}>
 
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
+                  stroke={chartGridColor}
                 />
 
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
+                  tick={{
+                    fill: chartTextColor,
+                    fontSize: 12,
+                  }}
                 />
 
                 <YAxis
                   domain={[0, 100]}
                   axisLine={false}
                   tickLine={false}
+                  tick={{
+                    fill: chartTextColor,
+                    fontSize: 12,
+                  }}
                 />
 
                 <Tooltip
+                  contentStyle={{
+                    backgroundColor:
+                      chartTooltipBg,
+                    borderColor:
+                      chartTooltipBorder,
+                    borderRadius: "8px",
+                    color: isDark
+                      ? "#E2E8F0"
+                      : "#0F172A",
+                  }}
+                  labelStyle={{
+                    color: isDark
+                      ? "#E2E8F0"
+                      : "#0F172A",
+                  }}
                   formatter={(value) => [
                     value === null ||
                     value === undefined
@@ -808,6 +1096,7 @@ function Analytics() {
                 />
 
               </LineChart>
+
             </ResponsiveContainer>
           )}
 
@@ -823,18 +1112,30 @@ function Analytics() {
 
         {/* Top Success Agent */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Top Success Rate
           </p>
 
-          <h3 className="mt-2 text-xl font-bold text-slate-900">
+          <h3 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
             {topSuccessAgent?.name ||
               "No data"}
           </h3>
 
-          <p className="mt-2 text-sm text-green-600">
+          <p className="mt-2 text-sm text-green-600 dark:text-green-400">
             {topSuccessAgent
               ? `${topSuccessAgent.successRate}% success rate`
               : "No completed or failed tasks yet"}
@@ -844,18 +1145,30 @@ function Analytics() {
 
         {/* Most Active Agent */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Most Active Agent
           </p>
 
-          <h3 className="mt-2 text-xl font-bold text-slate-900">
+          <h3 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
             {mostActiveAgent?.name ||
               "No data"}
           </h3>
 
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             {mostActiveAgent
               ? `${mostActiveAgent.total.toLocaleString()} tasks`
               : "No task usage yet"}
@@ -865,19 +1178,31 @@ function Analytics() {
 
         {/* Agent Coverage */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+          "
+        >
 
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Agent Coverage
           </p>
 
-          <h3 className="mt-2 text-xl font-bold text-slate-900">
+          <h3 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
             {agents.length > 0
               ? `${agentData.length}/${agents.length}`
               : "0"}
           </h3>
 
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             Agents used by at least one task
           </p>
 
@@ -885,11 +1210,26 @@ function Analytics() {
 
       </div>
 
-      {/* Data limitation note */}
+      {/* ====================================================== */}
+      {/* DATA LIMITATION NOTE */}
+      {/* ====================================================== */}
 
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div
+        className="
+          mt-6
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          p-5
+          shadow-sm
+          dark:border-slate-800
+          dark:bg-slate-900
+          dark:shadow-none
+        "
+      >
 
-        <p className="text-xs leading-5 text-slate-500">
+        <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">
           Analytics are calculated from the task and agent data available
           through the admin API. Completion-time and response-time metrics
           are not shown because the current task data does not expose a
@@ -897,6 +1237,7 @@ function Analytics() {
         </p>
 
       </div>
+
     </div>
   )
 }

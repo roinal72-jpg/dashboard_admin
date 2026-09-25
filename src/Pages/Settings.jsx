@@ -22,6 +22,7 @@ const loadSavedSettings = () => {
     return {
       autoRefresh:
         parsed.autoRefresh !== false,
+
       maintenanceMode: false,
     }
   } catch {
@@ -35,21 +36,28 @@ function Settings() {
   )
 
   const [saved, setSaved] = useState(false)
+
   const [maintenanceLoading, setMaintenanceLoading] =
     useState(true)
+
   const [maintenanceSaving, setMaintenanceSaving] =
     useState(false)
+
   const [maintenanceError, setMaintenanceError] =
     useState("")
 
   const [systemInfo, setSystemInfo] = useState({
     version: "v1.0.0",
+
     environment:
       import.meta.env.MODE === "development"
         ? "Development"
         : "Production",
+
     apiStatus: "Checking",
+
     databaseStatus: "Checking",
+
     activeAgents: 0,
   })
 
@@ -96,11 +104,13 @@ function Settings() {
     setMaintenanceError("")
 
     try {
-      const response = await fetch(
-        "http://localhost:8081/api/system/maintenance"
+      const response = await apiFetch(
+        "/api/system/maintenance"
       )
 
-      const data = await response.json().catch(() => ({}))
+      const data = await response
+        .json()
+        .catch(() => ({}))
 
       if (!response.ok || !data?.ok) {
         throw new Error(
@@ -152,9 +162,11 @@ function Settings() {
         "/api/admin/settings/maintenance",
         {
           method: "PUT",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             maintenance: nextValue,
           }),
@@ -221,9 +233,11 @@ function Settings() {
         usersResponse
           .json()
           .catch(() => ({})),
+
         agentsResponse
           .json()
           .catch(() => ({})),
+
         tasksResponse
           .json()
           .catch(() => ({})),
@@ -247,8 +261,11 @@ function Settings() {
 
       setSystemInfo((current) => ({
         ...current,
+
         apiStatus: "Operational",
+
         databaseStatus: "Connected",
+
         activeAgents: agents.filter(
           (agent) => agent.is_active
         ).length,
@@ -264,7 +281,9 @@ function Settings() {
 
       setSystemInfo((current) => ({
         ...current,
+
         apiStatus: "Unavailable",
+
         databaseStatus: "Unavailable",
       }))
 
@@ -304,22 +323,32 @@ function Settings() {
     }
   }, [settings.autoRefresh])
 
+  // ============================================================
+  // RENDER
+  // ============================================================
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 p-6 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
 
       {/* ====================================================== */}
       {/* HEADER */}
       {/* ====================================================== */}
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
+
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
           Settings
         </h1>
 
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Configure your Agentic AI dashboard
         </p>
+
       </div>
+
+      {/* ====================================================== */}
+      {/* MAIN GRID */}
+      {/* ====================================================== */}
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
 
@@ -329,21 +358,25 @@ function Settings() {
 
         <div className="xl:col-span-2">
 
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900">
 
-            <div className="border-b border-slate-200 p-5">
+            {/* HEADER */}
 
-              <h2 className="text-lg font-semibold text-slate-900">
+            <div className="border-b border-slate-200 p-5 dark:border-slate-800">
+
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 General Settings
               </h2>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Manage dashboard preferences
               </p>
 
             </div>
 
-            <div className="divide-y divide-slate-100">
+            {/* SETTINGS */}
+
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
 
               {/* ================================================== */}
               {/* AUTO REFRESH */}
@@ -353,11 +386,11 @@ function Settings() {
 
                 <div>
 
-                  <p className="font-medium text-slate-800">
+                  <p className="font-medium text-slate-800 dark:text-slate-100">
                     Auto Refresh
                   </p>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Automatically refresh system information every 30 seconds
                   </p>
 
@@ -373,17 +406,19 @@ function Settings() {
                   }
                   className={`relative h-6 w-11 shrink-0 rounded-full transition ${
                     settings.autoRefresh
-                      ? "bg-slate-900"
-                      : "bg-slate-300"
+                      ? "bg-slate-900 dark:bg-white"
+                      : "bg-slate-300 dark:bg-slate-700"
                   }`}
                 >
+
                   <span
                     className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
                       settings.autoRefresh
-                        ? "left-6"
+                        ? "left-6 dark:bg-slate-900"
                         : "left-1"
                     }`}
                   />
+
                 </button>
 
               </div>
@@ -396,22 +431,22 @@ function Settings() {
 
                 <div>
 
-                  <p className="font-medium text-slate-800">
+                  <p className="font-medium text-slate-800 dark:text-slate-100">
                     Maintenance Mode
                   </p>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Disable access to the normal website while maintenance is active
                   </p>
 
                   {settings.maintenanceMode && (
-                    <p className="mt-2 text-xs font-medium text-amber-600">
+                    <p className="mt-2 text-xs font-medium text-amber-600 dark:text-amber-400">
                       Website sedang dalam maintenance.
                     </p>
                   )}
 
                   {maintenanceError && (
-                    <p className="mt-2 text-xs font-medium text-red-600">
+                    <p className="mt-2 text-xs font-medium text-red-600 dark:text-red-400">
                       {maintenanceError}
                     </p>
                   )}
@@ -431,7 +466,7 @@ function Settings() {
                   className={`relative h-6 w-11 shrink-0 rounded-full transition ${
                     settings.maintenanceMode
                       ? "bg-amber-500"
-                      : "bg-slate-300"
+                      : "bg-slate-300 dark:bg-slate-700"
                   } ${
                     maintenanceLoading ||
                     maintenanceSaving
@@ -439,6 +474,7 @@ function Settings() {
                       : ""
                   }`}
                 >
+
                   <span
                     className={`absolute top-1 h-4 w-4 rounded-full bg-white transition-all ${
                       settings.maintenanceMode
@@ -446,21 +482,23 @@ function Settings() {
                         : "left-1"
                     }`}
                   />
+
                 </button>
 
               </div>
 
             </div>
+
           </div>
 
           {/* ================================================== */}
-          {/* SAVE */}
+          {/* SAVE BUTTON */}
           {/* ================================================== */}
 
           <div className="mt-6 flex items-center justify-end gap-3">
 
             {saved && (
-              <span className="text-sm font-medium text-green-600">
+              <span className="text-sm font-medium text-green-600 dark:text-green-400">
                 Settings saved successfully
               </span>
             )}
@@ -480,12 +518,16 @@ function Settings() {
                 transition
                 hover:bg-slate-800
                 hover:shadow-md
+                dark:bg-white
+                dark:text-slate-900
+                dark:hover:bg-slate-200
               "
             >
               Save Changes
             </button>
 
           </div>
+
         </div>
 
         {/* ==================================================== */}
@@ -494,15 +536,17 @@ function Settings() {
 
         <div>
 
-          <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white shadow-sm transition-colors duration-200 dark:border-slate-800 dark:bg-slate-900">
 
-            <div className="border-b border-slate-200 p-5">
+            {/* HEADER */}
 
-              <h2 className="text-lg font-semibold text-slate-900">
+            <div className="border-b border-slate-200 p-5 dark:border-slate-800">
+
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                 System Information
               </h2>
 
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Current system information
               </p>
 
@@ -514,13 +558,13 @@ function Settings() {
               {/* VERSION */}
               {/* ================================================== */}
 
-              <div className="rounded-lg bg-slate-50 p-4">
+              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
 
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Version
                 </p>
 
-                <p className="mt-1 font-semibold text-slate-800">
+                <p className="mt-1 font-semibold text-slate-800 dark:text-slate-100">
                   {systemInfo.version}
                 </p>
 
@@ -530,13 +574,13 @@ function Settings() {
               {/* ENVIRONMENT */}
               {/* ================================================== */}
 
-              <div className="rounded-lg bg-slate-50 p-4">
+              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
 
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Environment
                 </p>
 
-                <p className="mt-1 font-semibold text-slate-800">
+                <p className="mt-1 font-semibold text-slate-800 dark:text-slate-100">
                   {systemInfo.environment}
                 </p>
 
@@ -546,9 +590,9 @@ function Settings() {
               {/* API STATUS */}
               {/* ================================================== */}
 
-              <div className="rounded-lg bg-slate-50 p-4">
+              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
 
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   API Status
                 </p>
 
@@ -570,11 +614,11 @@ function Settings() {
                     className={`font-semibold ${
                       systemInfo.apiStatus ===
                       "Operational"
-                        ? "text-green-700"
+                        ? "text-green-700 dark:text-green-400"
                         : systemInfo.apiStatus ===
                             "Checking"
-                          ? "text-yellow-700"
-                          : "text-red-700"
+                          ? "text-yellow-700 dark:text-yellow-400"
+                          : "text-red-700 dark:text-red-400"
                     }`}
                   >
                     {loadingInfo
@@ -590,9 +634,9 @@ function Settings() {
               {/* DATABASE */}
               {/* ================================================== */}
 
-              <div className="rounded-lg bg-slate-50 p-4">
+              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
 
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Database
                 </p>
 
@@ -614,11 +658,11 @@ function Settings() {
                     className={`font-semibold ${
                       systemInfo.databaseStatus ===
                       "Connected"
-                        ? "text-green-700"
+                        ? "text-green-700 dark:text-green-400"
                         : systemInfo.databaseStatus ===
                             "Checking"
-                          ? "text-yellow-700"
-                          : "text-red-700"
+                          ? "text-yellow-700 dark:text-yellow-400"
+                          : "text-red-700 dark:text-red-400"
                     }`}
                   >
                     {loadingInfo
@@ -634,13 +678,13 @@ function Settings() {
               {/* ACTIVE AGENTS */}
               {/* ================================================== */}
 
-              <div className="rounded-lg bg-slate-50 p-4">
+              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
 
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Active Agents
                 </p>
 
-                <p className="mt-1 font-semibold text-slate-800">
+                <p className="mt-1 font-semibold text-slate-800 dark:text-slate-100">
                   {loadingInfo
                     ? "Loading..."
                     : `${systemInfo.activeAgents} agents`}
@@ -652,9 +696,9 @@ function Settings() {
               {/* MAINTENANCE STATUS */}
               {/* ================================================== */}
 
-              <div className="rounded-lg bg-slate-50 p-4">
+              <div className="rounded-lg bg-slate-50 p-4 dark:bg-slate-800/60">
 
-                <p className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Maintenance
                 </p>
 
@@ -673,10 +717,10 @@ function Settings() {
                   <p
                     className={`font-semibold ${
                       maintenanceLoading
-                        ? "text-yellow-700"
+                        ? "text-yellow-700 dark:text-yellow-400"
                         : settings.maintenanceMode
-                          ? "text-amber-700"
-                          : "text-green-700"
+                          ? "text-amber-700 dark:text-amber-400"
+                          : "text-green-700 dark:text-green-400"
                     }`}
                   >
                     {maintenanceLoading
@@ -691,10 +735,11 @@ function Settings() {
               </div>
 
             </div>
+
           </div>
 
           {/* ================================================== */}
-          {/* REFRESH */}
+          {/* REFRESH SYSTEM INFORMATION */}
           {/* ================================================== */}
 
           <button
@@ -723,21 +768,32 @@ function Settings() {
               hover:bg-slate-50
               disabled:cursor-not-allowed
               disabled:opacity-50
+              dark:border-slate-800
+              dark:bg-slate-900
+              dark:text-slate-200
+              dark:hover:bg-slate-800
             "
           >
-            {loadingInfo || maintenanceLoading
+            {loadingInfo ||
+            maintenanceLoading
               ? "Refreshing..."
               : "Refresh System Information"}
           </button>
 
+          {/* ================================================== */}
+          {/* ERROR */}
+          {/* ================================================== */}
+
           {infoError && (
-            <p className="mt-3 text-xs leading-5 text-red-600">
+            <p className="mt-3 text-xs leading-5 text-red-600 dark:text-red-400">
               {infoError}
             </p>
           )}
 
         </div>
+
       </div>
+
     </div>
   )
 }

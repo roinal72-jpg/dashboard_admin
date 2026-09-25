@@ -101,9 +101,7 @@ const formatRelativeTime = (value) => {
   }
 
   const diffMs = Date.now() - date.getTime()
-  const diffMinutes = Math.floor(
-    diffMs / 60000
-  )
+  const diffMinutes = Math.floor(diffMs / 60000)
 
   if (diffMinutes < 1) {
     return "just now"
@@ -113,9 +111,7 @@ const formatRelativeTime = (value) => {
     return `${diffMinutes} min ago`
   }
 
-  const diffHours = Math.floor(
-    diffMinutes / 60
-  )
+  const diffHours = Math.floor(diffMinutes / 60)
 
   if (diffHours < 24) {
     return `${diffHours} hour${
@@ -123,9 +119,7 @@ const formatRelativeTime = (value) => {
     } ago`
   }
 
-  const diffDays = Math.floor(
-    diffHours / 24
-  )
+  const diffDays = Math.floor(diffHours / 24)
 
   return `${diffDays} day${
     diffDays > 1 ? "s" : ""
@@ -137,6 +131,7 @@ const buildActivityData = (tasks) => {
 
   for (let offset = 6; offset >= 0; offset -= 1) {
     const date = new Date()
+
     date.setHours(0, 0, 0, 0)
     date.setDate(date.getDate() - offset)
 
@@ -233,35 +228,21 @@ function Dashboard() {
           )
         }
 
-        const usersList = Array.isArray(
-          usersData?.users
-        )
+        const usersList = Array.isArray(usersData?.users)
           ? usersData.users
           : []
 
-        const agentsList = Array.isArray(
-          agentsData?.agents
-        )
+        const agentsList = Array.isArray(agentsData?.agents)
           ? agentsData.agents
           : []
 
-        const tasksList = Array.isArray(
-          tasksData?.tasks
-        )
+        const tasksList = Array.isArray(tasksData?.tasks)
           ? tasksData.tasks
           : []
 
-        setUsers(
-          usersList.map(normalizeUser)
-        )
-
-        setAgents(
-          agentsList.map(normalizeAgent)
-        )
-
-        setTasks(
-          tasksList.map(normalizeTask)
-        )
+        setUsers(usersList.map(normalizeUser))
+        setAgents(agentsList.map(normalizeAgent))
+        setTasks(tasksList.map(normalizeTask))
       } catch (error) {
         console.error(
           "Gagal mengambil data dashboard:",
@@ -287,23 +268,19 @@ function Dashboard() {
   ).length
 
   const runningAgents = agents.filter(
-    (agent) =>
-      agent.status === "Running"
+    (agent) => agent.status === "Running"
   ).length
 
   const completedTasks = tasks.filter(
-    (task) =>
-      task.status === "Completed"
+    (task) => task.status === "Completed"
   ).length
 
   const failedTasks = tasks.filter(
-    (task) =>
-      task.status === "Failed"
+    (task) => task.status === "Failed"
   ).length
 
   const pendingTasks = tasks.filter(
-    (task) =>
-      task.status === "Pending"
+    (task) => task.status === "Pending"
   ).length
 
   const processedTasks =
@@ -312,8 +289,7 @@ function Dashboard() {
   const successRate =
     processedTasks > 0
       ? (
-          (completedTasks /
-            processedTasks) *
+          (completedTasks / processedTasks) *
           100
         ).toFixed(1)
       : "0.0"
@@ -364,47 +340,107 @@ function Dashboard() {
       .slice(0, 5)
   }, [tasks, users])
 
-  const recentAgents = agents
-    .filter((agent) => agent.isActive)
-    .length
+  const recentAgents = agents.filter(
+    (agent) => agent.isActive
+  ).length
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      {/* Header */}
+    <div
+      className="
+        min-h-screen
+        bg-slate-50
+        p-6
+        transition-colors
+        dark:bg-slate-950
+      "
+    >
+      {/* HEADER */}
 
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1
+            className="
+              text-2xl
+              font-bold
+              text-slate-900
+              dark:text-white
+            "
+          >
             Dashboard
           </h1>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p
+            className="
+              mt-1
+              text-sm
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
             Overview of your Agentic AI system
           </p>
         </div>
 
         {!loading && !pageError && (
-          <span className="inline-flex items-center gap-2 rounded-full bg-green-100 px-3 py-1.5 text-xs font-semibold text-green-700">
+          <span
+            className="
+              inline-flex
+              items-center
+              gap-2
+              rounded-full
+              bg-green-100
+              px-3
+              py-1.5
+              text-xs
+              font-semibold
+              text-green-700
+              dark:bg-green-950
+              dark:text-green-400
+            "
+          >
             <span className="h-1.5 w-1.5 rounded-full bg-current" />
             Live data
           </span>
         )}
       </div>
 
-      {/* Error */}
+      {/* ERROR */}
 
       {pageError && (
-        <div className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-          <p className="text-sm font-medium text-red-600">
+        <div
+          className="
+            mb-6
+            flex
+            items-center
+            justify-between
+            gap-4
+            rounded-lg
+            border
+            border-red-200
+            bg-red-50
+            px-4
+            py-3
+            dark:border-red-900
+            dark:bg-red-950/40
+          "
+        >
+          <p
+            className="
+              text-sm
+              font-medium
+              text-red-600
+              dark:text-red-400
+            "
+          >
             {pageError}
           </p>
         </div>
       )}
 
-      {/* Stats */}
+      {/* STATS */}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {/* Total Users */}
+        {/* TOTAL USERS */}
 
         <div
           className="
@@ -422,15 +458,34 @@ function Dashboard() {
             hover:-translate-y-1
             hover:border-slate-300
             hover:shadow-xl
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:hover:border-slate-700
           "
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
                 Total Users
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-tight
+                  text-slate-900
+                  dark:text-white
+                "
+              >
                 {loading
                   ? "..."
                   : totalUsers.toLocaleString()}
@@ -451,6 +506,10 @@ function Dashboard() {
                 duration-300
                 group-hover:bg-slate-900
                 group-hover:text-white
+                dark:bg-slate-800
+                dark:text-slate-300
+                dark:group-hover:bg-white
+                dark:group-hover:text-slate-900
               "
             >
               U
@@ -458,13 +517,19 @@ function Dashboard() {
           </div>
 
           <div className="mt-4">
-            <span className="text-sm text-slate-400">
+            <span
+              className="
+                text-sm
+                text-slate-400
+                dark:text-slate-500
+              "
+            >
               Registered users
             </span>
           </div>
         </div>
 
-        {/* Active Agents */}
+        {/* ACTIVE AGENTS */}
 
         <div
           className="
@@ -482,15 +547,34 @@ function Dashboard() {
             hover:-translate-y-1
             hover:border-slate-300
             hover:shadow-xl
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:hover:border-slate-700
           "
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
                 Active Agents
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-tight
+                  text-slate-900
+                  dark:text-white
+                "
+              >
                 {loading
                   ? "..."
                   : activeAgents.toLocaleString()}
@@ -511,6 +595,10 @@ function Dashboard() {
                 duration-300
                 group-hover:bg-slate-900
                 group-hover:text-white
+                dark:bg-slate-800
+                dark:text-slate-300
+                dark:group-hover:bg-white
+                dark:group-hover:text-slate-900
               "
             >
               A
@@ -518,7 +606,13 @@ function Dashboard() {
           </div>
 
           <div className="mt-4">
-            <span className="text-sm text-slate-400">
+            <span
+              className="
+                text-sm
+                text-slate-400
+                dark:text-slate-500
+              "
+            >
               {loading
                 ? "Loading..."
                 : `${runningAgents} currently running`}
@@ -526,7 +620,7 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Tasks Completed */}
+        {/* TASKS COMPLETED */}
 
         <div
           className="
@@ -544,15 +638,34 @@ function Dashboard() {
             hover:-translate-y-1
             hover:border-slate-300
             hover:shadow-xl
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:hover:border-slate-700
           "
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
                 Tasks Completed
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-tight
+                  text-slate-900
+                  dark:text-white
+                "
+              >
                 {loading
                   ? "..."
                   : completedTasks.toLocaleString()}
@@ -573,6 +686,10 @@ function Dashboard() {
                 duration-300
                 group-hover:bg-slate-900
                 group-hover:text-white
+                dark:bg-slate-800
+                dark:text-slate-300
+                dark:group-hover:bg-white
+                dark:group-hover:text-slate-900
               "
             >
               T
@@ -580,13 +697,19 @@ function Dashboard() {
           </div>
 
           <div className="mt-4">
-            <span className="text-sm text-slate-400">
+            <span
+              className="
+                text-sm
+                text-slate-400
+                dark:text-slate-500
+              "
+            >
               From all users
             </span>
           </div>
         </div>
 
-        {/* Success Rate */}
+        {/* SUCCESS RATE */}
 
         <div
           className="
@@ -604,15 +727,34 @@ function Dashboard() {
             hover:-translate-y-1
             hover:border-slate-300
             hover:shadow-xl
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:hover:border-slate-700
           "
         >
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
                 Success Rate
               </p>
 
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-tight
+                  text-slate-900
+                  dark:text-white
+                "
+              >
                 {loading
                   ? "..."
                   : `${successRate}%`}
@@ -633,6 +775,10 @@ function Dashboard() {
                 duration-300
                 group-hover:bg-slate-900
                 group-hover:text-white
+                dark:bg-slate-800
+                dark:text-slate-300
+                dark:group-hover:bg-white
+                dark:group-hover:text-slate-900
               "
             >
               %
@@ -640,25 +786,56 @@ function Dashboard() {
           </div>
 
           <div className="mt-4">
-            <span className="text-sm text-slate-400">
+            <span
+              className="
+                text-sm
+                text-slate-400
+                dark:text-slate-500
+              "
+            >
               Completed vs failed
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* MAIN CONTENT */}
 
       <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
-        {/* Activity Chart */}
+        {/* ACTIVITY CHART */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-2">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            xl:col-span-2
+            dark:border-slate-800
+            dark:bg-slate-900
+          "
+        >
           <div className="mb-5">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2
+              className="
+                text-lg
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               Task Activity
             </h2>
 
-            <p className="text-sm text-slate-500">
+            <p
+              className="
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
               Completed tasks over the last 7 days
             </p>
           </div>
@@ -672,24 +849,38 @@ function Dashboard() {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
+                  stroke="currentColor"
+                  className="text-slate-200 dark:text-slate-800"
                 />
 
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
+                  tick={{ fill: "currentColor" }}
+                  className="text-slate-500 dark:text-slate-400"
                 />
 
                 <YAxis
                   axisLine={false}
                   tickLine={false}
                   allowDecimals={false}
+                  tick={{ fill: "currentColor" }}
+                  className="text-slate-500 dark:text-slate-400"
                 />
 
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--chart-tooltip-bg)",
+                    borderColor: "var(--chart-tooltip-border)",
+                    borderRadius: "8px",
+                    color: "var(--chart-tooltip-text)",
+                  }}
+                />
 
                 <Bar
                   dataKey="tasks"
+                  fill="#2563eb"
                   radius={[6, 6, 0, 0]}
                 />
               </BarChart>
@@ -697,15 +888,39 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* System Status */}
+        {/* SYSTEM STATUS */}
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div
+          className="
+            rounded-xl
+            border
+            border-slate-200
+            bg-white
+            p-5
+            shadow-sm
+            dark:border-slate-800
+            dark:bg-slate-900
+          "
+        >
           <div className="mb-5">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2
+              className="
+                text-lg
+                font-semibold
+                text-slate-900
+                dark:text-white
+              "
+            >
               System Status
             </h2>
 
-            <p className="text-sm text-slate-500">
+            <p
+              className="
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
               Current system health
             </p>
           </div>
@@ -713,13 +928,35 @@ function Dashboard() {
           <div className="space-y-4">
             {/* API */}
 
-            <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                bg-slate-50
+                p-4
+                dark:bg-slate-800
+              "
+            >
               <div>
-                <p className="font-medium text-slate-800">
+                <p
+                  className="
+                    font-medium
+                    text-slate-800
+                    dark:text-slate-200
+                  "
+                >
                   API Server
                 </p>
 
-                <p className="text-xs text-slate-500">
+                <p
+                  className="
+                    text-xs
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
                   Admin API connected
                 </p>
               </div>
@@ -727,8 +964,8 @@ function Dashboard() {
               <span
                 className={
                   pageError
-                    ? "rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700"
-                    : "rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700"
+                    ? "rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 dark:bg-red-950 dark:text-red-400"
+                    : "rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-950 dark:text-green-400"
                 }
               >
                 {pageError
@@ -739,15 +976,37 @@ function Dashboard() {
               </span>
             </div>
 
-            {/* Database */}
+            {/* DATABASE */}
 
-            <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                bg-slate-50
+                p-4
+                dark:bg-slate-800
+              "
+            >
               <div>
-                <p className="font-medium text-slate-800">
+                <p
+                  className="
+                    font-medium
+                    text-slate-800
+                    dark:text-slate-200
+                  "
+                >
                   Database
                 </p>
 
-                <p className="text-xs text-slate-500">
+                <p
+                  className="
+                    text-xs
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
                   PostgreSQL data available
                 </p>
               </div>
@@ -755,8 +1014,8 @@ function Dashboard() {
               <span
                 className={
                   pageError
-                    ? "rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700"
-                    : "rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700"
+                    ? "rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 dark:bg-red-950 dark:text-red-400"
+                    : "rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-950 dark:text-green-400"
                 }
               >
                 {pageError
@@ -767,44 +1026,112 @@ function Dashboard() {
               </span>
             </div>
 
-            {/* Agents */}
+            {/* AGENTS */}
 
-            <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                bg-slate-50
+                p-4
+                dark:bg-slate-800
+              "
+            >
               <div>
-                <p className="font-medium text-slate-800">
+                <p
+                  className="
+                    font-medium
+                    text-slate-800
+                    dark:text-slate-200
+                  "
+                >
                   AI Agents
                 </p>
 
-                <p className="text-xs text-slate-500">
+                <p
+                  className="
+                    text-xs
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
                   {loading
                     ? "Loading agents..."
                     : `${recentAgents} active agents`}
                 </p>
               </div>
 
-              <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
+              <span
+                className="
+                  rounded-full
+                  bg-green-100
+                  px-3
+                  py-1
+                  text-xs
+                  font-semibold
+                  text-green-700
+                  dark:bg-green-950
+                  dark:text-green-400
+                "
+              >
                 {loading
                   ? "Checking"
                   : "Operational"}
               </span>
             </div>
 
-            {/* Queue */}
+            {/* QUEUE */}
 
-            <div className="flex items-center justify-between rounded-lg bg-slate-50 p-4">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                bg-slate-50
+                p-4
+                dark:bg-slate-800
+              "
+            >
               <div>
-                <p className="font-medium text-slate-800">
+                <p
+                  className="
+                    font-medium
+                    text-slate-800
+                    dark:text-slate-200
+                  "
+                >
                   Queue
                 </p>
 
-                <p className="text-xs text-slate-500">
+                <p
+                  className="
+                    text-xs
+                    text-slate-500
+                    dark:text-slate-400
+                  "
+                >
                   {loading
                     ? "Loading tasks..."
                     : `${pendingTasks} pending tasks`}
                 </p>
               </div>
 
-              <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
+              <span
+                className="
+                  rounded-full
+                  bg-yellow-100
+                  px-3
+                  py-1
+                  text-xs
+                  font-semibold
+                  text-yellow-700
+                  dark:bg-yellow-950
+                  dark:text-yellow-400
+                "
+              >
                 {pendingTasks > 0
                   ? "Normal"
                   : "Clear"}
@@ -814,25 +1141,66 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* RECENT ACTIVITY */}
 
-      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div
+        className="
+          mt-6
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          p-5
+          shadow-sm
+          dark:border-slate-800
+          dark:bg-slate-900
+        "
+      >
         <div className="mb-5">
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2
+            className="
+              text-lg
+              font-semibold
+              text-slate-900
+              dark:text-white
+            "
+          >
             Recent Activity
           </h2>
 
-          <p className="text-sm text-slate-500">
+          <p
+            className="
+              text-sm
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
             Latest activity from users and tasks
           </p>
         </div>
 
         {loading ? (
-          <div className="py-8 text-center text-sm text-slate-500">
+          <div
+            className="
+              py-8
+              text-center
+              text-sm
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
             Loading recent activity...
           </div>
         ) : recentActivity.length === 0 ? (
-          <div className="py-8 text-center text-sm text-slate-500">
+          <div
+            className="
+              py-8
+              text-center
+              text-sm
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
             No recent activity.
           </div>
         ) : (
@@ -851,22 +1219,41 @@ function Dashboard() {
                     pb-4
                     last:border-b-0
                     last:pb-0
+                    dark:border-slate-800
                   "
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-800">
+                    <p
+                      className="
+                        font-medium
+                        text-slate-800
+                        dark:text-slate-200
+                      "
+                    >
                       {item.title}
                     </p>
 
-                    <p className="truncate text-sm text-slate-500">
+                    <p
+                      className="
+                        truncate
+                        text-sm
+                        text-slate-500
+                        dark:text-slate-400
+                      "
+                    >
                       {item.description}
                     </p>
                   </div>
 
-                  <span className="shrink-0 text-xs text-slate-400">
-                    {formatRelativeTime(
-                      item.date
-                    )}
+                  <span
+                    className="
+                      shrink-0
+                      text-xs
+                      text-slate-400
+                      dark:text-slate-500
+                    "
+                  >
+                    {formatRelativeTime(item.date)}
                   </span>
                 </div>
               )

@@ -244,43 +244,43 @@ function Tasks() {
   ).length
 
   // ============================================================
-  // STATUS / PRIORITY
+  // STATUS
   // ============================================================
 
   const getStatusClass = (status) => {
     if (status === "Completed") {
-      return "bg-green-100 text-green-700"
+      return "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400"
     }
 
     if (status === "Running") {
-      return "bg-blue-100 text-blue-700"
+      return "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400"
     }
 
     if (status === "Pending") {
-      return "bg-yellow-100 text-yellow-700"
+      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400"
     }
 
     if (status === "Failed") {
-      return "bg-red-100 text-red-700"
+      return "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400"
     }
 
-    return "bg-slate-100 text-slate-600"
+    return "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
   }
 
   const getPriorityClass = (priority) => {
     if (priority === "High") {
-      return "bg-red-100 text-red-700"
+      return "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400"
     }
 
     if (priority === "Medium") {
-      return "bg-yellow-100 text-yellow-700"
+      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/15 dark:text-yellow-400"
     }
 
     if (priority === "Low") {
-      return "bg-slate-100 text-slate-600"
+      return "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
     }
 
-    return "bg-slate-100 text-slate-600"
+    return "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
   }
 
   // ============================================================
@@ -379,18 +379,18 @@ function Tasks() {
   // ============================================================
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 p-6 text-slate-900 transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
 
       {/* ====================================================== */}
       {/* HEADER */}
       {/* ====================================================== */}
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
           Tasks
         </h1>
 
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Monitor tasks from all users
         </p>
       </div>
@@ -400,9 +400,9 @@ function Tasks() {
       {/* ====================================================== */}
 
       {pageError && (
-        <div className="mb-5 flex items-center justify-between gap-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+        <div className="mb-5 flex items-center justify-between gap-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 dark:border-red-500/30 dark:bg-red-500/10">
 
-          <p className="text-sm font-medium text-red-600">
+          <p className="text-sm font-medium text-red-600 dark:text-red-400">
             {pageError}
           </p>
 
@@ -433,6 +433,8 @@ function Tasks() {
 
       <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
 
+        {/* Completed */}
+
         <div
           className="
             rounded-xl
@@ -445,21 +447,27 @@ function Tasks() {
             duration-200
             hover:-translate-y-0.5
             hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
           "
         >
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Completed
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-green-600">
+          <p className="mt-2 text-3xl font-bold text-green-600 dark:text-green-400">
             {completedTasks}
           </p>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             Successfully completed
           </p>
         </div>
 
+        {/* Running */}
+
         <div
           className="
             rounded-xl
@@ -472,21 +480,27 @@ function Tasks() {
             duration-200
             hover:-translate-y-0.5
             hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
           "
         >
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Running
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-blue-600">
+          <p className="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">
             {runningTasks}
           </p>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             Currently processing
           </p>
         </div>
 
+        {/* Pending */}
+
         <div
           className="
             rounded-xl
@@ -499,21 +513,27 @@ function Tasks() {
             duration-200
             hover:-translate-y-0.5
             hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
           "
         >
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Pending
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-yellow-600">
+          <p className="mt-2 text-3xl font-bold text-yellow-600 dark:text-yellow-400">
             {pendingTasks}
           </p>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             Waiting to run
           </p>
         </div>
 
+        {/* Failed */}
+
         <div
           className="
             rounded-xl
@@ -526,17 +546,21 @@ function Tasks() {
             duration-200
             hover:-translate-y-0.5
             hover:shadow-lg
+            dark:border-slate-800
+            dark:bg-slate-900
+            dark:shadow-none
+            dark:hover:bg-slate-900
           "
         >
-          <p className="text-sm font-medium text-slate-500">
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
             Failed
           </p>
 
-          <p className="mt-2 text-3xl font-bold text-red-600">
+          <p className="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">
             {failedTasks}
           </p>
 
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             Need attention
           </p>
         </div>
@@ -547,17 +571,19 @@ function Tasks() {
       {/* MAIN CARD */}
       {/* ====================================================== */}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
 
-        {/* Toolbar */}
+        {/* ================================================== */}
+        {/* TOOLBAR */}
+        {/* ================================================== */}
 
-        <div className="flex flex-col gap-4 border-b border-slate-200 p-5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-col gap-4 border-b border-slate-200 p-5 xl:flex-row xl:items-center xl:justify-between dark:border-slate-800">
 
           {/* Search */}
 
           <div className="relative w-full xl:max-w-md">
 
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
               ⌕
             </span>
 
@@ -588,6 +614,13 @@ function Tasks() {
                 focus:bg-white
                 focus:ring-2
                 focus:ring-slate-100
+                dark:border-slate-700
+                dark:bg-slate-800
+                dark:text-slate-100
+                dark:placeholder:text-slate-500
+                dark:focus:border-slate-600
+                dark:focus:bg-slate-800
+                dark:focus:ring-slate-700
               "
             />
 
@@ -615,6 +648,10 @@ function Tasks() {
                 text-slate-700
                 outline-none
                 focus:border-slate-400
+                dark:border-slate-700
+                dark:bg-slate-800
+                dark:text-slate-200
+                dark:focus:border-slate-600
               "
             >
               <option value="All">
@@ -656,6 +693,10 @@ function Tasks() {
                 text-slate-700
                 outline-none
                 focus:border-slate-400
+                dark:border-slate-700
+                dark:bg-slate-800
+                dark:text-slate-200
+                dark:focus:border-slate-600
               "
             >
               <option value="All">
@@ -679,17 +720,19 @@ function Tasks() {
 
         </div>
 
-        {/* Result Info */}
+        {/* ================================================== */}
+        {/* RESULT INFO */}
+        {/* ================================================== */}
 
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3 dark:border-slate-800">
 
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Showing{" "}
-            <span className="font-semibold text-slate-700">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">
               {filteredTasks.length}
             </span>{" "}
             of{" "}
-            <span className="font-semibold text-slate-700">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">
               {tasks.length}
             </span>{" "}
             tasks
@@ -706,6 +749,8 @@ function Tasks() {
                 text-slate-500
                 transition
                 hover:text-slate-900
+                dark:text-slate-400
+                dark:hover:text-white
               "
             >
               Clear filters
@@ -714,21 +759,25 @@ function Tasks() {
 
         </div>
 
-        {/* Loading */}
+        {/* ================================================== */}
+        {/* LOADING */}
+        {/* ================================================== */}
 
         {loading ? (
           <div className="px-5 py-16 text-center">
 
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-800" />
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-800 dark:border-slate-700 dark:border-t-slate-300" />
 
-            <p className="mt-4 text-sm text-slate-500">
+            <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
               Loading tasks...
             </p>
 
           </div>
         ) : (
           <>
-            {/* Table */}
+            {/* ================================================== */}
+            {/* TABLE */}
+            {/* ================================================== */}
 
             <div className="overflow-x-auto">
 
@@ -736,33 +785,33 @@ function Tasks() {
 
                 <thead>
 
-                  <tr className="border-b border-slate-200 bg-slate-50">
+                  <tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/50">
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Task
                     </th>
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       User
                     </th>
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Agent
                     </th>
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Status
                     </th>
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Priority
                     </th>
 
-                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Created
                     </th>
 
-                    <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       Action
                     </th>
 
@@ -781,6 +830,8 @@ function Tasks() {
                           border-slate-100
                           transition
                           hover:bg-slate-50
+                          dark:border-slate-800
+                          dark:hover:bg-slate-800/50
                         "
                       >
 
@@ -790,11 +841,11 @@ function Tasks() {
 
                           <div>
 
-                            <p className="font-medium text-slate-900">
+                            <p className="font-medium text-slate-900 dark:text-slate-100">
                               {task.title}
                             </p>
 
-                            <p className="mt-0.5 text-xs text-slate-500">
+                            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-500">
                               TASK #{task.id}
                             </p>
 
@@ -809,17 +860,17 @@ function Tasks() {
                           {task.user ? (
                             <div>
 
-                              <p className="text-sm font-medium text-slate-800">
+                              <p className="text-sm font-medium text-slate-800 dark:text-slate-200">
                                 {task.user.name}
                               </p>
 
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-slate-500 dark:text-slate-500">
                                 {task.user.email}
                               </p>
 
                             </div>
                           ) : (
-                            <span className="text-sm text-slate-400">
+                            <span className="text-sm text-slate-400 dark:text-slate-500">
                               Unknown User
                             </span>
                           )}
@@ -833,17 +884,17 @@ function Tasks() {
                           {task.agent ? (
                             <div>
 
-                              <p className="text-sm font-medium text-slate-700">
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
                                 {task.agent.name}
                               </p>
 
-                              <p className="text-xs text-slate-500">
+                              <p className="text-xs text-slate-500 dark:text-slate-500">
                                 {task.agent.slug}
                               </p>
 
                             </div>
                           ) : (
-                            <span className="text-sm text-slate-400">
+                            <span className="text-sm text-slate-400 dark:text-slate-500">
                               No Agent
                             </span>
                           )}
@@ -902,7 +953,7 @@ function Tasks() {
 
                         {/* Created */}
 
-                        <td className="px-5 py-4 text-sm text-slate-500">
+                        <td className="px-5 py-4 text-sm text-slate-500 dark:text-slate-400">
                           {formatDateTime(
                             task.createdAt
                           )}
@@ -931,6 +982,9 @@ function Tasks() {
                               transition
                               hover:bg-slate-100
                               hover:text-slate-700
+                              dark:text-slate-500
+                              dark:hover:bg-slate-800
+                              dark:hover:text-slate-200
                             "
                             aria-label={`Actions for ${task.title}`}
                           >
@@ -952,6 +1006,8 @@ function Tasks() {
                                   py-1
                                   text-left
                                   shadow-xl
+                                  dark:border-slate-700
+                                  dark:bg-slate-900
                                 "
                                 style={{
                                   top: `${menuPosition.top}px`,
@@ -971,10 +1027,13 @@ function Tasks() {
                                     w-full
                                     px-4
                                     py-2.5
+                                    text-left
                                     text-sm
                                     text-slate-700
                                     transition
                                     hover:bg-slate-50
+                                    dark:text-slate-200
+                                    dark:hover:bg-slate-800
                                   "
                                 >
                                   View Details
@@ -994,20 +1053,22 @@ function Tasks() {
 
               </table>
 
-              {/* Empty State */}
+              {/* ================================================= */}
+              {/* EMPTY STATE */}
+              {/* ================================================= */}
 
               {filteredTasks.length === 0 && (
                 <div className="px-5 py-16 text-center">
 
-                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-400">
+                  <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-400 dark:bg-slate-800 dark:text-slate-500">
                     ?
                   </div>
 
-                  <h3 className="font-semibold text-slate-800">
+                  <h3 className="font-semibold text-slate-800 dark:text-slate-200">
                     No tasks found
                   </h3>
 
-                  <p className="mt-1 text-sm text-slate-500">
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                     Try changing your search or filters.
                   </p>
 
@@ -1035,6 +1096,7 @@ function Tasks() {
             justify-center
             bg-slate-900/40
             p-4
+            dark:bg-black/60
           "
           onClick={() =>
             setSelectedTask(null)
@@ -1048,6 +1110,9 @@ function Tasks() {
               rounded-xl
               bg-white
               shadow-2xl
+              dark:border
+              dark:border-slate-800
+              dark:bg-slate-900
             "
             onClick={(event) =>
               event.stopPropagation()
@@ -1056,15 +1121,15 @@ function Tasks() {
 
             {/* Header */}
 
-            <div className="flex items-start justify-between border-b border-slate-200 p-6">
+            <div className="flex items-start justify-between border-b border-slate-200 p-6 dark:border-slate-800">
 
               <div>
 
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
                   Task Details
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   Information from the database
                 </p>
 
@@ -1085,6 +1150,9 @@ function Tasks() {
                   transition
                   hover:bg-slate-100
                   hover:text-slate-700
+                  dark:text-slate-500
+                  dark:hover:bg-slate-800
+                  dark:hover:text-slate-200
                 "
               >
                 ×
@@ -1094,44 +1162,44 @@ function Tasks() {
 
             {/* Content */}
 
-            <div className="p-6">
+            <div className="max-h-[80vh] overflow-y-auto p-6">
 
-              <h3 className="font-semibold text-slate-900">
+              <h3 className="font-semibold text-slate-900 dark:text-white">
                 {selectedTask.title}
               </h3>
 
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-500">
                 TASK #{selectedTask.id}
               </p>
 
               {selectedTask.description && (
-                <div className="mt-5 rounded-lg bg-slate-50 p-4">
+                <div className="mt-5 rounded-lg bg-slate-50 p-4 dark:bg-slate-800">
 
-                  <p className="text-sm leading-6 text-slate-600">
+                  <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
                     {selectedTask.description}
                   </p>
 
                 </div>
               )}
 
-              <div className="mt-6 rounded-lg border border-slate-200">
+              <div className="mt-6 rounded-lg border border-slate-200 dark:border-slate-700">
 
                 {/* User */}
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     User
                   </span>
 
                   <div className="text-right">
 
-                    <p className="text-sm font-semibold text-slate-800">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                       {selectedTask.user?.name ||
                         "Unknown User"}
                     </p>
 
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-500">
                       {selectedTask.user?.email ||
                         "-"}
                     </p>
@@ -1142,20 +1210,20 @@ function Tasks() {
 
                 {/* Agent */}
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Agent
                   </span>
 
                   <div className="text-right">
 
-                    <p className="text-sm font-semibold text-slate-800">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                       {selectedTask.agent?.name ||
                         "No Agent"}
                     </p>
 
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 dark:text-slate-500">
                       {selectedTask.agent?.slug ||
                         "-"}
                     </p>
@@ -1166,9 +1234,9 @@ function Tasks() {
 
                 {/* Status */}
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Status
                   </span>
 
@@ -1191,9 +1259,9 @@ function Tasks() {
 
                 {/* Priority */}
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Priority
                   </span>
 
@@ -1216,13 +1284,13 @@ function Tasks() {
 
                 {/* Label */}
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Label
                   </span>
 
-                  <span className="text-sm font-medium text-slate-800">
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                     {selectedTask.label}
                   </span>
 
@@ -1230,13 +1298,13 @@ function Tasks() {
 
                 {/* Created */}
 
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-slate-800">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Created
                   </span>
 
-                  <span className="text-sm font-medium text-slate-800">
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                     {formatDateTime(
                       selectedTask.createdAt
                     )}
@@ -1248,11 +1316,11 @@ function Tasks() {
 
                 <div className="flex items-center justify-between px-4 py-3">
 
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-slate-500 dark:text-slate-400">
                     Updated
                   </span>
 
-                  <span className="text-sm font-medium text-slate-800">
+                  <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
                     {formatDateTime(
                       selectedTask.updatedAt
                     )}
@@ -1280,6 +1348,9 @@ function Tasks() {
                   text-white
                   transition
                   hover:bg-slate-800
+                  dark:bg-white
+                  dark:text-slate-900
+                  dark:hover:bg-slate-200
                 "
               >
                 Close
